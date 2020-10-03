@@ -1,21 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useFont } from './src/js/hooks';
+import BottomTabs from './src/navigators/bottomtabs';
+import { AuthStack } from './src/navigators/stacks';
+import { styles } from './src/constants/Theme';
 
-export default function App() {
+const App = () => {
+  let firebaseAuth = true;
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      {firebaseAuth ? <BottomTabs /> : <AuthStack />}
+      <StatusBar style="light" backgroundColor="#1A202C" />
+    </>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default () => {
+  let [fontsLoaded] = useFont();
+
+  if (fontsLoaded) {
+    return <App />;
+  } else {
+    return (
+      <View style={styles.spinnerView}>
+        <ActivityIndicator size="large" color="#3EBB70" />
+      </View>
+    );
+  }
+};
