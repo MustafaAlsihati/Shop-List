@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { stackOptions } from '../constants/Theme';
 import Home from '../screens/home/Home';
-import Items from '../screens/home/Items';
+import List from '../screens/home/List';
 import Search from '../screens/search/Search';
 import Account from '../screens/account/Account';
 import SignIn from '../screens/auth/Signin';
@@ -22,11 +22,11 @@ export const HomeStack = () => {
         component={Home}
       />
       <Stack.Screen
-        name="Items"
+        name="List"
         options={{
-          title: 'Items',
+          title: 'List',
         }}
-        component={Items}
+        component={List}
       />
     </Stack.Navigator>
   );

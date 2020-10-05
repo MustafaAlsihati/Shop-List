@@ -29,6 +29,12 @@ export const styles = StyleSheet.create({
   fullH: {
     width: '100%',
   },
+  row: {
+    flexDirection: 'row',
+  },
+  column: {
+    flexDirection: 'column',
+  },
   divider: {
     backgroundColor: colors.white,
     opacity: 0.5,
@@ -58,6 +64,24 @@ export const styles = StyleSheet.create({
     width: 180,
     height: 191,
     resizeMode: 'contain',
+  },
+  userName: {
+    color: colors.white,
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 20,
+    marginLeft: 10,
+    marginRight: 5,
+  },
+  userInfoTile: {
+    backgroundColor: colors.cardBackground,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: 15,
+    width: 65,
+    height: 65,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
   },
   authContainer: {
     width: '100%',
@@ -94,7 +118,7 @@ export const styles = StyleSheet.create({
   textfieldInput: {
     color: colors.textfieldInput,
     fontFamily: 'Montserrat-Regular',
-    fontSize: 17,
+    fontSize: 14,
   },
   priceUnit: {
     fontFamily: 'Montserrat-Regular',
@@ -188,6 +212,13 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     marginTop: 5,
+  },
+  searchListTile: {
+    height: 'auto',
+    flexDirection: 'row',
+    alignContent: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
   },
   itemTileInfoContainer: {
     marginTop: 10,

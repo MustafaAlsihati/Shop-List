@@ -10,7 +10,7 @@ const Home = ({ navigation }) => {
 
   const handleTileClick = (item) => {
     console.log('Tile pressed');
-    navigation.navigate('Items');
+    navigation.navigate('List');
   };
 
   useLayoutEffect(() => {
