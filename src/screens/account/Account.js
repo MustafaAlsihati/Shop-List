@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Avatar, Input } from 'react-native-elements';
+import { Divider } from 'react-native-paper';
 import { Feather, Entypo } from '@expo/vector-icons';
 import { colors, styles } from '../../constants/Theme';
 import UserInfoTile from '../../components/UserInfoTile';
@@ -16,6 +17,7 @@ const Account = () => {
   return (
     <View style={{ ...styles.View, ...styles.column }}>
       <AccountHeader {...{ editUserName, handleOnEditClick, handleOnSubmit }} />
+      <Divider style={{ ...styles.divider }} />
       <OwnedLists />
     </View>
   );
