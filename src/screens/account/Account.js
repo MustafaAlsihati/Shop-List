@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Avatar, Input } from 'react-native-elements';
+import {
+  View,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import { Divider } from 'react-native-paper';
-import { Feather, Entypo } from '@expo/vector-icons';
 import { colors, styles } from '../../constants/Theme';
-import UserInfoTile from '../../components/UserInfoTile';
+import OwnedListTile from '../../components/OwnedListTile';
+import Tags from './Tags';
+import AccountHeader from './AccountHeader';
 
 const Account = () => {
   const [editUserName, setEditUserName] = useState(false);
@@ -15,74 +22,59 @@ const Account = () => {
   };
 
   return (
-    <View style={{ ...styles.View, ...styles.column }}>
-      <AccountHeader {...{ editUserName, handleOnEditClick, handleOnSubmit }} />
-      <Divider style={{ ...styles.divider }} />
-      <OwnedLists />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ScrollView style={{ ...styles.View, ...styles.column }}>
+        <AccountHeader
+          {...{ editUserName, handleOnEditClick, handleOnSubmit }}
+        />
+        <Divider style={styles.divider} />
+        <OwnedLists />
+        <Divider style={{ ...styles.divider, marginTop: 15 }} />
+        <TagLists />
+      </ScrollView>
+    </TouchableWithoutFeedback>
+  );
+};
+
+const TagLists = () => {
+  return (
+    <View style={{ ...styles.column, marginBottom: 75 }}>
+      <View
+        style={{
+          ...styles.row,
+          justifyContent: 'space-between',
+          marginBottom: 5,
+        }}
+      >
+        <Text style={styles.ownedLists}>Tags</Text>
+        <Text style={styles.addTags}>Add Tags</Text>
+      </View>
+      <View style={{ ...styles.row, flexWrap: 'wrap' }}>
+        <Tags name="PC" />
+        <Tags name="Newegg" />
+        <Tags name="Gaming" />
+        <Tags name="Clothes" />
+        <Tags name="Stuff" />
+        <Tags name="Phones" />
+        <Tags name="PlayStation" />
+        <Tags name="Xbox Series X" />
+        <Tags name="Mobile" />
+      </View>
     </View>
   );
 };
 
-const AccountHeader = ({ editUserName, handleOnEditClick, handleOnSubmit }) => {
+const OwnedLists = () => {
   return (
     <>
-      <View style={{ ...styles.row, alignItems: 'center' }}>
-        <Avatar
-          rounded
-          title="ME"
-          size="large"
-          // source={{ uri: '' }}
-          onPress={() => console.log('Avatar Clicked!')}
-          activeOpacity={0.7}
-          containerStyle={{
-            borderWidth: 1,
-            backgroundColor: colors.grayish_white,
-          }}
-        />
-        {editUserName ? (
-          <View style={{ ...styles.row, alignItems: 'center' }}>
-            <Input
-              containerStyle={{ width: 230, marginTop: 5 }}
-              inputContainerStyle={{ borderBottomColor: colors.green }}
-              inputStyle={{ ...styles.textfieldInput, fontSize: 20 }}
-              placeholder="Mustafa"
-            />
-            <TouchableOpacity
-              style={{ paddingHorizontal: 5 }}
-              onPress={handleOnSubmit}
-              activeOpacity={0.5}
-            >
-              <Entypo name="check" size={30} color={colors.green} />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={{ ...styles.row, alignItems: 'center' }}
-            onPress={handleOnEditClick}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.userName}>Mustafa</Text>
-            <Feather name="edit-3" size={18} color={colors.green} />
-          </TouchableOpacity>
-        )}
-      </View>
-      <View
-        style={{
-          ...styles.row,
-          width: '100%',
-          justifyContent: 'center',
-          marginTop: 10,
-        }}
-      >
-        <UserInfoTile number={4} name="List(s)" />
-        <UserInfoTile number={15} name="Item(s)" />
+      <Text style={styles.ownedLists}>Owned Lists</Text>
+      <View style={styles.row}>
+        <TouchableOpacity onPress={() => {}} activeOpacity={0.6}>
+          <OwnedListTile />
+        </TouchableOpacity>
       </View>
     </>
   );
-};
-
-const OwnedLists = () => {
-  return <></>;
 };
 
 export default Account;

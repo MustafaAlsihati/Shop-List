@@ -44,6 +44,23 @@ export const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
+  chip: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.cardBackground,
+    borderRadius: 50,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 'auto',
+    paddingHorizontal: 10,
+  },
+  chipText: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 13,
+    color: colors.white,
+  },
   spinnerView: {
     flex: 1,
     justifyContent: 'center',
@@ -172,6 +189,18 @@ export const styles = StyleSheet.create({
     borderRadius: 15,
     overflow: 'hidden',
     marginTop: 5,
+  },
+  ownedLists: {
+    color: colors.white,
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
+    marginBottom: 5,
+  },
+  addTags: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
+    color: colors.blueish_grey,
+    textDecorationLine: 'underline',
   },
   tileInfo: {
     width: '100%',
