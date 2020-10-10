@@ -1,18 +1,26 @@
 import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import Loading from './src/components/Loading';
 import { useFont } from './src/js/hooks';
 import BottomTabs from './src/navigators/bottomtabs';
 import { AuthStack } from './src/navigators/stacks';
 import { styles } from './src/constants/Theme';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import useAuth from './src/hooks/useAuth';
+
+export const UserContext = React.createContext();
 
 const App = () => {
-  let firebaseAuth = true;
+  const { user, loading } = useAuth();
 
+  // Show Loading:
+  if (loading) return <Loading />;
+  // check Auth and redirect:
   return (
     <>
-      {firebaseAuth ? <BottomTabs /> : <AuthStack />}
-      <StatusBar style="light" backgroundColor="#1A202C" />
+      {user ? <BottomTabs /> : <AuthStack />}
+      <StatusBar style="light" translucent />
     </>
   );
 };
@@ -21,12 +29,12 @@ export default () => {
   let [fontsLoaded] = useFont();
 
   if (fontsLoaded) {
-    return <App />;
-  } else {
     return (
-      <View style={styles.spinnerView}>
-        <ActivityIndicator size="large" color="#3EBB70" />
-      </View>
+      <SafeAreaProvider>
+        <App />
+      </SafeAreaProvider>
     );
+  } else {
+    return <Loading />;
   }
 };

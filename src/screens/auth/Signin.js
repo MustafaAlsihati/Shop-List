@@ -18,8 +18,6 @@ const SignIn = ({ navigation }) => {
     password: 0.3,
   });
 
-  console.log('Nav: ', navigation);
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={{ ...styles.View, paddingHorizontal: 0 }}>
@@ -33,7 +31,7 @@ const SignIn = ({ navigation }) => {
           <Text style={styles.authLabel}>Sign In</Text>
           <View style={styles.authInputContainer}>
             <Input
-              placeholder="EMAIL"
+              placeholder="Email"
               rightIcon={
                 <Entypo name="email" size={16} color={colors.blueish_grey} />
               }
@@ -50,7 +48,7 @@ const SignIn = ({ navigation }) => {
               onBlur={() => setInputOpacity({ email: 0.3 })}
             />
             <Input
-              placeholder="PASSWORD"
+              placeholder="Password"
               rightIcon={
                 <Feather
                   name="eye-off"

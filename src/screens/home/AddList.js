@@ -33,7 +33,7 @@ const AddList = ({ refRBSheet }) => {
       >
         <View style={styles.BSInputFieldContainer}>
           <Input
-            placeholder="LIST NAME"
+            placeholder="List Name"
             autoCapitalize="sentences"
             autoCorrect={false}
             maxLength={35}
@@ -48,7 +48,7 @@ const AddList = ({ refRBSheet }) => {
             onBlur={() => setInputOpacity({ listName: 0.3 })}
           />
           <Input
-            placeholder="LIST DESCRIPTION"
+            placeholder="List Description"
             autoCapitalize="sentences"
             autoCorrect={false}
             maxLength={150}
@@ -69,7 +69,7 @@ const AddList = ({ refRBSheet }) => {
             onBlur={() => setInputOpacity({ listDesc: 0.3 })}
           />
           <Button
-            title="UPLOAD PICTURE"
+            title="Upload Picture"
             buttonStyle={styles.uploadBtn}
             titleStyle={styles.btnTitle}
             loading={loading.upload}

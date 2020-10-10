@@ -8,9 +8,10 @@ export const colors = {
   border: '#4A5568',
   delete: '#F56565',
   green: '#3EBB70',
+  alert: '#F7B119',
   blueish_grey: '#A0AEC0',
   grayish_white: '#D9D9D9',
-  textfieldInput: '#C4C4C4',
+  textfieldInput: '#ABABAB',
   black: '#000000',
   white: '#FFFFFF',
 };
@@ -129,12 +130,13 @@ export const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.3)',
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     paddingHorizontal: 10,
+    paddingVertical: 0,
     height: 55,
     borderRadius: 10,
   },
   textfieldInput: {
-    color: colors.textfieldInput,
-    fontFamily: 'Montserrat-Regular',
+    color: colors.border,
+    fontFamily: 'Montserrat-Medium',
     fontSize: 14,
   },
   priceUnit: {
@@ -265,6 +267,33 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
+  modalView: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  modalContainer: {
+    // height: 240,
+    margin: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    padding: 20,
+    backgroundColor: colors.cardBackground,
+    borderColor: colors.border,
+    borderWidth: 1,
+  },
+  modalMessage: {
+    color: colors.blueish_grey,
+    fontSize: 20,
+    fontFamily: 'Montserrat-Medium',
+    marginVertical: 20,
+    textAlign: 'center',
+  },
 });
 
 export const bottomSheetStyle = {
@@ -336,5 +365,4 @@ export const bottomTabsStyle = {
   bottom: 0,
   alignItems: 'center',
   justifyContent: 'center',
-  height: 65,
 };

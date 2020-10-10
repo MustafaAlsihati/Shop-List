@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { stackOptions } from '../constants/Theme';
 import Home from '../screens/home/Home';
 import List from '../screens/home/List';
+import Item from '../screens/home/Item';
 import Search from '../screens/search/Search';
 import Account from '../screens/account/Account';
 import SignIn from '../screens/auth/Signin';
@@ -27,6 +28,13 @@ export const HomeStack = () => {
           title: 'List',
         }}
         component={List}
+      />
+      <Stack.Screen
+        name="Item"
+        options={{
+          title: 'Item',
+        }}
+        component={Item}
       />
     </Stack.Navigator>
   );

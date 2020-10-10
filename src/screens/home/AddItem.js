@@ -8,6 +8,7 @@ import BottomSheet from '../../components/BottomSheet';
 
 const inputInitState = {
   ItemName: 0.3,
+  ItemDesc: 0.3,
   ItemLink: 0.3,
   ItemPrice: 0.3,
 };
@@ -24,7 +25,7 @@ const AddList = ({ refRBSheet }) => {
     <>
       <BottomSheet
         refRBSheet={refRBSheet}
-        height={350}
+        height={450}
         onClose={() => {
           setInputOpacity(inputInitState);
           setLoading(loadingInitState);
@@ -32,7 +33,7 @@ const AddList = ({ refRBSheet }) => {
       >
         <View style={styles.BSInputFieldContainer}>
           <Input
-            placeholder="ITEM NAME"
+            placeholder="Item Name"
             autoCapitalize="sentences"
             autoCorrect={false}
             maxLength={35}
@@ -47,7 +48,28 @@ const AddList = ({ refRBSheet }) => {
             onBlur={() => setInputOpacity({ ItemName: 0.3 })}
           />
           <Input
-            placeholder="ITEM LINK"
+            placeholder="Item Description (Optional)"
+            autoCapitalize="sentences"
+            autoCorrect={false}
+            maxLength={150}
+            multiline
+            numberOfLines={3}
+            containerStyle={styles.textfieldContainer}
+            inputStyle={{
+              ...styles.textfieldInput,
+              textAlignVertical: 'top',
+            }}
+            placeholderTextColor="#A0AEC0"
+            inputContainerStyle={{
+              ...styles.textfield,
+              backgroundColor: `rgba(255, 255, 255, ${inputOpacity.ItemDesc})`,
+              height: 100,
+            }}
+            onFocus={() => setInputOpacity({ ItemDesc: 1.0 })}
+            onBlur={() => setInputOpacity({ ItemDesc: 0.3 })}
+          />
+          <Input
+            placeholder="Item Link"
             autoCapitalize="none"
             autoCorrect={false}
             maxLength={35}
@@ -65,7 +87,7 @@ const AddList = ({ refRBSheet }) => {
             }
           />
           <Input
-            placeholder="ITEM PRICE"
+            placeholder="Item Price"
             autoCapitalize="none"
             autoCorrect={false}
             maxLength={35}

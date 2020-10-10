@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   AntDesign,
   Foundation,
@@ -12,6 +13,8 @@ import { SearchStack, HomeStack, AccountStack } from './stacks';
 const Tab = createMaterialBottomTabNavigator();
 
 const BottomTabs = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -19,7 +22,7 @@ const BottomTabs = () => {
         activeColor={colors.green}
         inactiveColor={colors.blueish_grey}
         initialRouteName="Home"
-        barStyle={bottomTabsStyle}
+        barStyle={{ ...bottomTabsStyle, height: 65 + insets.bottom }}
       >
         <Tab.Screen
           name="Search"
