@@ -7,11 +7,13 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
+import { Button } from 'react-native-elements';
 import { Divider } from 'react-native-paper';
 import { colors, styles } from '../../constants/Theme';
 import OwnedListTile from '../../components/OwnedListTile';
 import Tags from './Tags';
 import AccountHeader from './AccountHeader';
+import { signOut } from '../../firebase/index';
 
 const Account = () => {
   const [editUserName, setEditUserName] = useState(false);
@@ -26,6 +28,12 @@ const Account = () => {
       <ScrollView style={{ ...styles.View, ...styles.column }}>
         <AccountHeader
           {...{ editUserName, handleOnEditClick, handleOnSubmit }}
+        />
+        <Button
+          title="SIGN OUT"
+          buttonStyle={styles.btn}
+          titleStyle={styles.btnTitle}
+          onPress={signOut}
         />
         <Divider style={styles.divider} />
         <OwnedLists />

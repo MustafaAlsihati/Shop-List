@@ -135,7 +135,7 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
   },
   textfieldInput: {
-    color: colors.border,
+    color: colors.cardBackground,
     fontFamily: 'Montserrat-Medium',
     fontSize: 14,
   },

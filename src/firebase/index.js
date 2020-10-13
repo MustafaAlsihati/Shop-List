@@ -25,7 +25,7 @@ export const chechAuth = async (cb) => {
 };
 
 export const signInWithEmailAndPassword = async (email, password) => {
-  firebase
+  return firebase
     .auth()
     .signInWithEmailAndPassword(email, password)
     .catch(function (error) {
@@ -34,11 +34,10 @@ export const signInWithEmailAndPassword = async (email, password) => {
 };
 
 export const signUpWithEmailAndPassword = async (user) => {
-  firebase
+  return firebase
     .auth()
     .createUserWithEmailAndPassword(user.email, user.password)
     .then(() => {
-      console.log('User: ', user);
       let ref = db.collection('users');
       let uid = ref.doc().id;
       return ref.doc(uid).set({
@@ -53,6 +52,6 @@ export const signUpWithEmailAndPassword = async (user) => {
     });
 };
 
-export const logOut = async () => {
+export const signOut = async () => {
   return await auth.signOut();
 };

@@ -11,6 +11,15 @@ import { styles, colors } from '../../constants/Theme';
 import { Entypo, Feather, AntDesign } from '@expo/vector-icons';
 import { signUpWithEmailAndPassword as signUp } from '../../firebase/index';
 import Dialog from '../../components/Dialog';
+import _ from 'lodash';
+import { signUpValidator } from '../../js/validators';
+
+const userObj = {
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+};
 
 const SignUp = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -21,13 +30,8 @@ const SignUp = ({ navigation }) => {
     isError: false,
     isAlert: false,
   });
-  const [user, setUser] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
-
+  const [user, setUser] = useState(userObj);
+  const [inputErrs, setInputErrs] = useState(userObj);
   const [hidePassword, setHidePassword] = useState(true);
   const [inputOpacity, setInputOpacity] = useState({
     username: 0.3,
@@ -38,17 +42,18 @@ const SignUp = ({ navigation }) => {
 
   const onSubmit = async () => {
     setLoading(true);
-    // if (true) {
-    //   setDialogProps({
-    //     show: true,
-    //     message: 'User registered successfully',
-    //     isSuccess: true,
-    //   });
-    //   return;
-    // }
-
-    return await signUp(user).then(() => {
+    if (!signUpValidator(user, setInputErrs)) {
       setLoading(false);
+      return;
+    }
+
+    return await signUp(user).catch((err) => {
+      setLoading(false);
+      setDialogProps({
+        show: true,
+        message: 'Error occurred while registering, please try again',
+        isError: true,
+      });
     });
   };
 
@@ -71,6 +76,12 @@ const SignUp = ({ navigation }) => {
               <Input
                 placeholder="Username"
                 value={user.username}
+                errorStyle={{ marginTop: 0, marginBottom: 10 }}
+                errorMessage={
+                  inputErrs.username && inputErrs.username.length > 0
+                    ? inputErrs.username
+                    : ''
+                }
                 onChangeText={(text) => handleInputChange(text, 'username')}
                 rightIcon={
                   <AntDesign
@@ -87,6 +98,10 @@ const SignUp = ({ navigation }) => {
                 inputContainerStyle={{
                   ...styles.textfield,
                   backgroundColor: `rgba(255, 255, 255, ${inputOpacity.username})`,
+                  borderColor:
+                    inputErrs.username && inputErrs.username.length > 0
+                      ? colors.delete
+                      : 'rgba(255, 255, 255, 0.3)',
                 }}
                 onFocus={() => setInputOpacity({ username: 1.0 })}
                 onBlur={() => setInputOpacity({ username: 0.3 })}
@@ -94,6 +109,12 @@ const SignUp = ({ navigation }) => {
               <Input
                 placeholder="Email"
                 value={user.email}
+                errorStyle={{ marginTop: 0, marginBottom: 10 }}
+                errorMessage={
+                  inputErrs.email && inputErrs.email.length > 0
+                    ? inputErrs.email
+                    : ''
+                }
                 onChangeText={(text) => handleInputChange(text, 'email')}
                 rightIcon={
                   <Entypo name="email" size={16} color={colors.blueish_grey} />
@@ -106,6 +127,10 @@ const SignUp = ({ navigation }) => {
                 inputContainerStyle={{
                   ...styles.textfield,
                   backgroundColor: `rgba(255, 255, 255, ${inputOpacity.email})`,
+                  borderColor:
+                    inputErrs.email && inputErrs.email.length > 0
+                      ? colors.delete
+                      : 'rgba(255, 255, 255, 0.3)',
                 }}
                 onFocus={() => setInputOpacity({ email: 1.0 })}
                 onBlur={() => setInputOpacity({ email: 0.3 })}
@@ -113,6 +138,12 @@ const SignUp = ({ navigation }) => {
               <Input
                 placeholder="Password"
                 value={user.password}
+                errorStyle={{ marginTop: 0, marginBottom: 10 }}
+                errorMessage={
+                  inputErrs.password && inputErrs.password.length > 0
+                    ? inputErrs.password
+                    : ''
+                }
                 onChangeText={(text) => handleInputChange(text, 'password')}
                 rightIcon={
                   <Feather
@@ -130,6 +161,10 @@ const SignUp = ({ navigation }) => {
                 inputContainerStyle={{
                   ...styles.textfield,
                   backgroundColor: `rgba(255, 255, 255, ${inputOpacity.password})`,
+                  borderColor:
+                    inputErrs.password && inputErrs.password.length > 0
+                      ? colors.delete
+                      : 'rgba(255, 255, 255, 0.3)',
                 }}
                 secureTextEntry={hidePassword}
                 onFocus={() => setInputOpacity({ password: 1.0 })}
@@ -138,6 +173,13 @@ const SignUp = ({ navigation }) => {
               <Input
                 placeholder="Confirm Password"
                 value={user.confirmPassword}
+                errorStyle={{ marginTop: 0, marginBottom: 10 }}
+                errorMessage={
+                  inputErrs.confirmPassword &&
+                  inputErrs.confirmPassword.length > 0
+                    ? inputErrs.confirmPassword
+                    : ''
+                }
                 onChangeText={(text) =>
                   handleInputChange(text, 'confirmPassword')
                 }
@@ -157,6 +199,11 @@ const SignUp = ({ navigation }) => {
                 inputContainerStyle={{
                   ...styles.textfield,
                   backgroundColor: `rgba(255, 255, 255, ${inputOpacity.confirmPassword})`,
+                  borderColor:
+                    inputErrs.confirmPassword &&
+                    inputErrs.confirmPassword.length > 0
+                      ? colors.delete
+                      : 'rgba(255, 255, 255, 0.3)',
                 }}
                 secureTextEntry={hidePassword}
                 onFocus={() => setInputOpacity({ confirmPassword: 1.0 })}
