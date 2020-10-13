@@ -8,7 +8,7 @@ import { styles, colors } from '../constants/Theme';
 const Dialog = ({ open, onClose, message, isSuccess, isError, isAlert }) => {
   return (
     <View style={styles.modalView}>
-      <Modal isVisible={open}>
+      <Modal isVisible={open} onBackdropPress={onClose}>
         <View style={styles.modalContainer}>
           {isSuccess ? (
             <AntDesign name="checkcircle" size={60} color={colors.green} />
