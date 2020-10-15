@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { Input } from 'react-native-elements';
-import { Divider } from 'react-native-paper';
+import Divider from '../../components/Divider';
 import { AntDesign } from '@expo/vector-icons';
 import { styles, colors } from '../../constants/Theme';
 import SearchLists from '../../components/SearchLists';
@@ -48,9 +48,7 @@ const Search = () => {
           />
         </View>
 
-        <Divider
-          style={{ ...styles.divider, marginTop: -5, marginBottom: 0 }}
-        />
+        <Divider style={{ marginVertical: -10, marginBottom: -5 }} />
 
         <View style={styles.tiles}>
           <TouchableOpacity

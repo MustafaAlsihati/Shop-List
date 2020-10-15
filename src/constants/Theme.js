@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 export const colors = {
   background: '#1A202C',
@@ -37,8 +37,10 @@ export const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   divider: {
+    width: '100%',
+    height: 1,
     backgroundColor: colors.white,
-    opacity: 0.5,
+    opacity: 0.3,
     marginVertical: 10,
   },
   fullWH: {
@@ -277,7 +279,6 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   modalContainer: {
-    // height: 240,
     margin: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -293,6 +294,22 @@ export const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
     marginVertical: 20,
     textAlign: 'center',
+  },
+  menu: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuItem: {
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: colors.border,
+    borderColor: colors.border,
+    elevation: 0,
+  },
+  menuItemText: {
+    fontFamily: 'Montserrat-Regular',
+    color: colors.white,
   },
 });
 
@@ -315,16 +332,14 @@ export const stackOptions = {
   headerTitleAlign: 'center',
   headerBackTitle: ' ',
   headerBackImage: () => (
-    <MaterialIcons
-      name="keyboard-backspace"
-      size={34}
-      color={colors.blueish_grey}
-    />
+    <View style={{ paddingHorizontal: 5 }}>
+      <Ionicons name="ios-arrow-back" size={28} color={colors.blueish_grey} />
+    </View>
   ),
   headerTitleStyle: {
     alignSelf: 'center',
     fontFamily: 'Montserrat-Medium',
-    fontSize: 19,
+    fontSize: 18,
   },
   headerTintColor: colors.blueish_grey,
   headerStyle: {

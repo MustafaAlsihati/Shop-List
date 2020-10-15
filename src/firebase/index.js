@@ -20,6 +20,8 @@ const db = firebaseApp.firestore();
 const auth = firebaseApp.auth();
 const storage = firebaseApp.storage();
 
+// Auth Part:
+
 export const chechAuth = async (cb) => {
   return auth.onAuthStateChanged(cb);
 };
@@ -55,3 +57,11 @@ export const signUpWithEmailAndPassword = async (user) => {
 export const signOut = async () => {
   return await auth.signOut();
 };
+
+// Firestore Part:
+
+export const getLists = async () => {};
+
+export const getItems = async () => {};
+
+export const getUserInfo = async () => {};

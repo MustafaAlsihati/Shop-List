@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -7,21 +7,48 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import { Button } from 'react-native-elements';
-import { Divider } from 'react-native-paper';
+import Divider from '../../components/Divider';
+import { MenuItem } from 'react-native-material-menu';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, styles } from '../../constants/Theme';
 import OwnedListTile from '../../components/OwnedListTile';
 import Tags from './Tags';
 import AccountHeader from './AccountHeader';
+import MenuPopup from '../../components/MenuPopup';
 import { signOut } from '../../firebase/index';
 
-const Account = () => {
-  const [editUserName, setEditUserName] = useState(false);
+const Account = ({ navigation }) => {
+  const refMenu = useRef();
 
+  const [editUserName, setEditUserName] = useState(false);
   const handleOnEditClick = () => setEditUserName(true);
   const handleOnSubmit = () => {
     setEditUserName(false);
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <MenuPopup
+          {...{ refMenu }}
+          menuItems={
+            <MenuItem onPress={signOut}>
+              <Text style={styles.menuItemText}>Sign Out</Text>
+            </MenuItem>
+          }
+        >
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => refMenu.current.show()}
+          >
+            <View style={{ paddingHorizontal: 15 }}>
+              <Ionicons name="md-more" size={24} color={colors.blueish_grey} />
+            </View>
+          </TouchableOpacity>
+        </MenuPopup>
+      ),
+    });
+  }, [navigation]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -29,15 +56,9 @@ const Account = () => {
         <AccountHeader
           {...{ editUserName, handleOnEditClick, handleOnSubmit }}
         />
-        <Button
-          title="SIGN OUT"
-          buttonStyle={styles.btn}
-          titleStyle={styles.btnTitle}
-          onPress={signOut}
-        />
-        <Divider style={styles.divider} />
+        <Divider />
         <OwnedLists />
-        <Divider style={{ ...styles.divider, marginTop: 15 }} />
+        <Divider />
         <TagLists />
       </ScrollView>
     </TouchableWithoutFeedback>

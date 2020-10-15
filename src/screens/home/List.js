@@ -25,7 +25,12 @@ const Items = ({ navigation }) => {
       headerTransparent: true,
       headerRight: () => (
         <Button
-          titleStyle={{ ...styles.btnTitle, color: colors.green, fontSize: 14 }}
+          titleStyle={{
+            ...styles.btnTitle,
+            color: colors.green,
+            fontSize: 14,
+            paddingHorizontal: 5,
+          }}
           title="Add List"
           type="clear"
           onPress={() => refRBSheet.current.open()}

@@ -15,7 +15,12 @@ const Items = ({ navigation }) => {
       headerTitle: ' ',
       headerRight: () => (
         <Button
-          titleStyle={{ ...styles.btnTitle, color: colors.green, fontSize: 14 }}
+          titleStyle={{
+            ...styles.btnTitle,
+            color: colors.green,
+            fontSize: 14,
+            paddingHorizontal: 5,
+          }}
           title="Edit Item"
           type="clear"
           onPress={() => refRBSheet.current.open()}

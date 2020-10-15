@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Input, Button } from 'react-native-elements';
-import { Divider } from 'react-native-paper';
+import Divider from '../../components/Divider';
 import { Feather } from '@expo/vector-icons';
 import { styles, colors } from '../../constants/Theme';
 import BottomSheet from '../../components/BottomSheet';
@@ -80,7 +80,7 @@ const AddList = ({ refRBSheet }) => {
           />
         </View>
 
-        <Divider style={styles.divider} />
+        <Divider />
 
         <View style={styles.BSInputFieldContainer}>
           <Button

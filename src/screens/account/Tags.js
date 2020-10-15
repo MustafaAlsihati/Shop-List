@@ -18,7 +18,7 @@ const Tags = ({ name }) => {
             </Text>
             <Entypo
               name="circle-with-cross"
-              size={20}
+              size={22}
               style={{ paddingLeft: 5 }}
               color={colors.grayish_white}
               onPress={() => {}}
@@ -29,7 +29,7 @@ const Tags = ({ name }) => {
             <TextInput autoFocus style={styles.chipText} />
             <AntDesign
               name="checkcircle"
-              size={20}
+              size={22}
               style={{ paddingLeft: 5 }}
               color={colors.grayish_white}
               onPress={() => setEditChip(false)}

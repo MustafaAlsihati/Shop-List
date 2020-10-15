@@ -1,26 +1,16 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Menu, Provider } from 'react-native-paper';
+import { View } from 'react-native';
+import Menu from 'react-native-material-menu';
+import { colors, styles } from '../constants/Theme';
 
-const MenuPopup = ({ visible, closeMenu, children }) => {
+const MenuPopup = ({ refMenu, children, menuItems }) => {
   return (
-    <Provider>
-      <View style={styles.menu}>
-        <Menu visible={visible} onDismiss={closeMenu} anchor={children}>
-          <Menu.Item onPress={() => {}} title="Sign Out" />
-          {/* <Divider /> */}
-        </Menu>
-      </View>
-    </Provider>
+    <View style={styles.menu}>
+      <Menu ref={refMenu} button={children} style={styles.menuItem}>
+        {menuItems}
+      </Menu>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  menu: {
-    paddingTop: 50,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-});
 
 export default MenuPopup;
