@@ -6,6 +6,8 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { styles, colors } from '../../constants/Theme';
@@ -62,94 +64,106 @@ const SignIn = ({ navigation }) => {
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={{ ...styles.View, paddingHorizontal: 0 }}>
-          <View style={{ ...styles.logoContainer, flex: 2 }}>
-            <Image
-              style={styles.logo}
-              source={require('../../../assets/logo.png')}
-            />
-          </View>
-          <View style={styles.authContainer}>
-            <Text style={styles.authLabel}>Sign In</Text>
-            <View style={styles.authInputContainer}>
-              <Input
-                placeholder="Email"
-                value={user.email}
-                onChangeText={(text) => handleInputChange(text, 'email')}
-                rightIcon={
-                  <Entypo name="email" size={16} color={colors.blueish_grey} />
-                }
-                autoCapitalize="none"
-                autoCorrect={false}
-                containerStyle={styles.textfieldContainer}
-                inputStyle={styles.textfieldInput}
-                placeholderTextColor={colors.blueish_grey}
-                inputContainerStyle={{
-                  ...styles.textfield,
-                  backgroundColor: `rgba(255, 255, 255, ${inputOpacity.email})`,
-                }}
-                onFocus={() => setInputOpacity({ email: 1.0 })}
-                onBlur={() => setInputOpacity({ email: 0.3 })}
+      <KeyboardAvoidingView
+        behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={{ ...styles.View, paddingHorizontal: 0 }}>
+            <View style={{ ...styles.logoContainer, flex: 2 }}>
+              <Image
+                style={styles.logo}
+                source={require('../../../assets/logo.png')}
               />
-              <Input
-                placeholder="Password"
-                value={user.password}
-                onChangeText={(text) => handleInputChange(text, 'password')}
-                rightIcon={
-                  <Feather
-                    name="eye-off"
-                    size={16}
-                    color={colors.blueish_grey}
-                    onPress={() => setHidePassword(!hidePassword)}
-                  />
-                }
-                autoCapitalize="none"
-                autoCorrect={false}
-                containerStyle={styles.textfieldContainer}
-                inputStyle={styles.textfieldInput}
-                placeholderTextColor={colors.blueish_grey}
-                inputContainerStyle={{
-                  ...styles.textfield,
-                  backgroundColor: `rgba(255, 255, 255, ${inputOpacity.password})`,
-                }}
-                secureTextEntry={hidePassword}
-                onFocus={() => setInputOpacity({ password: 1.0 })}
-                onBlur={() => setInputOpacity({ password: 0.3 })}
-              />
-              <TouchableOpacity style={styles.linkContainer} onPress={() => {}}>
-                <Text style={styles.link}>Forgot Your Password?</Text>
-              </TouchableOpacity>
-              <Button
-                title="SIGN IN"
-                onPress={onSubmit}
-                buttonStyle={styles.btn}
-                titleStyle={styles.btnTitle}
-                loading={loading}
-                disabled={loading}
-              />
-              <Text style={styles.toSignUplink}>
-                Forgot Your Password?{' '}
-                <Text
-                  style={{ color: colors.green }}
-                  onPress={() => navigation.navigate('SignUp')}
+            </View>
+            <View style={styles.authContainer}>
+              <Text style={styles.authLabel}>Sign In</Text>
+              <View style={styles.authInputContainer}>
+                <Input
+                  placeholder="Email"
+                  value={user.email}
+                  onChangeText={(text) => handleInputChange(text, 'email')}
+                  rightIcon={
+                    <Entypo
+                      name="email"
+                      size={16}
+                      color={colors.blueish_grey}
+                    />
+                  }
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  containerStyle={styles.textfieldContainer}
+                  inputStyle={styles.textfieldInput}
+                  placeholderTextColor={colors.blueish_grey}
+                  inputContainerStyle={{
+                    ...styles.textfield,
+                    backgroundColor: `rgba(255, 255, 255, ${inputOpacity.email})`,
+                  }}
+                  onFocus={() => setInputOpacity({ email: 1.0 })}
+                  onBlur={() => setInputOpacity({ email: 0.3 })}
+                />
+                <Input
+                  placeholder="Password"
+                  value={user.password}
+                  onChangeText={(text) => handleInputChange(text, 'password')}
+                  rightIcon={
+                    <Feather
+                      name="eye-off"
+                      size={16}
+                      color={colors.blueish_grey}
+                      onPress={() => setHidePassword(!hidePassword)}
+                    />
+                  }
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  containerStyle={styles.textfieldContainer}
+                  inputStyle={styles.textfieldInput}
+                  placeholderTextColor={colors.blueish_grey}
+                  inputContainerStyle={{
+                    ...styles.textfield,
+                    backgroundColor: `rgba(255, 255, 255, ${inputOpacity.password})`,
+                  }}
+                  secureTextEntry={hidePassword}
+                  onFocus={() => setInputOpacity({ password: 1.0 })}
+                  onBlur={() => setInputOpacity({ password: 0.3 })}
+                />
+                <TouchableOpacity
+                  style={styles.linkContainer}
+                  onPress={() => {}}
                 >
-                  Sign Up
+                  <Text style={styles.link}>Forgot Your Password?</Text>
+                </TouchableOpacity>
+                <Button
+                  title="SIGN IN"
+                  onPress={onSubmit}
+                  buttonStyle={styles.btn}
+                  titleStyle={styles.btnTitle}
+                  loading={loading}
+                  disabled={loading}
+                />
+                <Text style={styles.toSignUplink}>
+                  Forgot Your Password?{' '}
+                  <Text
+                    style={{ color: colors.green }}
+                    onPress={() => navigation.navigate('SignUp')}
+                  >
+                    Sign Up
+                  </Text>
                 </Text>
-              </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
 
-      <Dialog
+      {/* <Dialog
         open={dialogProps.show}
         onClose={() => setDialogProps({ show: false })}
         message={dialogProps.message}
         isSuccess={dialogProps.isSuccess}
         isError={dialogProps.isError}
         isAlert={dialogProps.isAlert}
-      />
+      /> */}
     </>
   );
 };

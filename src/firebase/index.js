@@ -3,6 +3,8 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 
+/* ################################### Firebase Configs ###################################### */
+
 var firebaseConfig = {
   apiKey: 'AIzaSyAcTBE3HU_X9P5dfvxjw1m06FpzJu58S9s',
   authDomain: 'react-js-test-da73a.firebaseapp.com',
@@ -13,14 +15,16 @@ var firebaseConfig = {
   appId: '1:671160433029:web:04ef036bf82455b23eecec',
 };
 
-const firebaseApp = !firebase.apps.length
-  ? firebase.initializeApp(firebaseConfig)
-  : firebase.app();
+const firebaseApp = firebase.initializeApp(firebaseConfig);
 const db = firebaseApp.firestore();
 const auth = firebaseApp.auth();
 const storage = firebaseApp.storage();
 
-// Auth Part:
+/* #################################### Collections ######################################### */
+
+const USERS = db.collection('users');
+
+/* ######################################## Auth ############################################ */
 
 export const chechAuth = async (cb) => {
   return auth.onAuthStateChanged(cb);
@@ -39,14 +43,14 @@ export const signUpWithEmailAndPassword = async (user) => {
   return firebase
     .auth()
     .createUserWithEmailAndPassword(user.email, user.password)
-    .then(() => {
-      let ref = db.collection('users');
-      let uid = ref.doc().id;
-      return ref.doc(uid).set({
+    .then((result) => {
+      const uid = result.user.uid;
+      return USERS.doc(uid).set({
         username: user.username,
         email: user.email,
         uid,
         created: firebase.firestore.FieldValue.serverTimestamp(),
+        image: null,
       });
     })
     .catch(function (error) {
@@ -58,10 +62,15 @@ export const signOut = async () => {
   return await auth.signOut();
 };
 
-// Firestore Part:
+/* ##################################### Firestore ######################################### */
 
-export const getLists = async () => {};
+export const getMyLists = async () => {};
 
-export const getItems = async () => {};
+export const getMyItems = async () => {};
 
-export const getUserInfo = async () => {};
+export const getUserInfo = async (uid) => {
+  const snapshot = await USERS.doc(uid).get();
+  const data = snapshot.data();
+
+  return data;
+};

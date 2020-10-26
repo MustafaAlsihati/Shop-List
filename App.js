@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Loading from './src/components/Loading';
@@ -7,15 +7,14 @@ import BottomTabs from './src/navigators/bottomtabs';
 import { AuthStack } from './src/navigators/stacks';
 import { styles } from './src/constants/Theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import useAuth from './src/hooks/useAuth';
-
-export const UserContext = React.createContext();
+import { AuthProvider, AuthContext } from './src/contexts/AuthContext';
 
 const App = () => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useContext(AuthContext);
 
-  // Show Loading:
+  // Show loading:
   if (loading) return <Loading />;
+
   // check Auth and redirect:
   return (
     <>
@@ -28,13 +27,15 @@ const App = () => {
 export default () => {
   let [fontsLoaded] = useFont();
 
-  if (fontsLoaded) {
-    return (
-      <SafeAreaProvider>
-        <App />
-      </SafeAreaProvider>
-    );
-  } else {
-    return <Loading />;
-  }
+  return (
+    <AuthProvider>
+      {fontsLoaded ? (
+        <SafeAreaProvider>
+          <App />
+        </SafeAreaProvider>
+      ) : (
+        <Loading />
+      )}
+    </AuthProvider>
+  );
 };

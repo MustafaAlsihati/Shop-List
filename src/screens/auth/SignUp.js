@@ -48,6 +48,7 @@ const SignUp = ({ navigation }) => {
     }
 
     return await signUp(user).catch((err) => {
+      console.log('ERR:\n', err);
       setLoading(false);
       setDialogProps({
         show: true,

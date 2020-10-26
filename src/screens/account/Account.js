@@ -1,4 +1,10 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useLayoutEffect,
+} from 'react';
 import {
   View,
   ScrollView,
@@ -15,16 +21,22 @@ import OwnedListTile from '../../components/OwnedListTile';
 import Tags from './Tags';
 import AccountHeader from './AccountHeader';
 import MenuPopup from '../../components/MenuPopup';
-import { signOut } from '../../firebase/index';
+import { signOut, getUserInfo } from '../../firebase/index';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const Account = ({ navigation }) => {
   const refMenu = useRef();
+  const { user } = useContext(AuthContext);
+  const [userData, setUserData] = useState({});
 
-  const [editUserName, setEditUserName] = useState(false);
-  const handleOnEditClick = () => setEditUserName(true);
-  const handleOnSubmit = () => {
-    setEditUserName(false);
-  };
+  useEffect(() => {
+    const getUserData = async () => {
+      const result = await getUserInfo(user.uid);
+      setUserData(result);
+    };
+
+    if (user) getUserData();
+  }, [user]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -53,9 +65,7 @@ const Account = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ScrollView style={{ ...styles.View, ...styles.column }}>
-        <AccountHeader
-          {...{ editUserName, handleOnEditClick, handleOnSubmit }}
-        />
+        <AccountHeader {...{ userData, setUserData }} />
         <Divider />
         <OwnedLists />
         <Divider />

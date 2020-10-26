@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Avatar, Input } from 'react-native-elements';
 import { Feather, Entypo } from '@expo/vector-icons';
 import { colors, styles } from '../../constants/Theme';
 import UserInfoTile from '../../components/UserInfoTile';
 
-const AccountHeader = ({ editUserName, handleOnEditClick, handleOnSubmit }) => {
+const AccountHeader = ({ userData, setUserData }) => {
+  const [enableEdit, setEnableEdit] = useState(false);
+
   return (
     <>
       <View style={{ ...styles.row, alignItems: 'center' }}>
@@ -21,18 +23,18 @@ const AccountHeader = ({ editUserName, handleOnEditClick, handleOnSubmit }) => {
             backgroundColor: colors.grayish_white,
           }}
         />
-        {editUserName ? (
+        {enableEdit ? (
           <View style={{ ...styles.row, alignItems: 'center' }}>
             <Input
               containerStyle={{ width: 230, marginTop: 5 }}
               inputContainerStyle={{ borderBottomColor: colors.green }}
               inputStyle={{ ...styles.textfieldInput, fontSize: 20 }}
-              placeholder="Mustafa"
+              placeholder={userData.username}
             />
             <TouchableOpacity
               style={{ paddingHorizontal: 5 }}
-              onPress={handleOnSubmit}
               activeOpacity={0.5}
+              onPress={() => setEnableEdit(false)}
             >
               <Entypo name="check" size={30} color={colors.green} />
             </TouchableOpacity>
@@ -40,10 +42,10 @@ const AccountHeader = ({ editUserName, handleOnEditClick, handleOnSubmit }) => {
         ) : (
           <TouchableOpacity
             style={{ ...styles.row, alignItems: 'center' }}
-            onPress={handleOnEditClick}
             activeOpacity={0.7}
+            onPress={() => setEnableEdit(true)}
           >
-            <Text style={styles.userName}>Mustafa</Text>
+            <Text style={styles.userName}>{userData.username}</Text>
             <Feather name="edit-3" size={18} color={colors.green} />
           </TouchableOpacity>
         )}
