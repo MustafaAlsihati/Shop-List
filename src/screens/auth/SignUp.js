@@ -223,14 +223,14 @@ const SignUp = ({ navigation }) => {
         </View>
       </TouchableWithoutFeedback>
 
-      <Dialog
+      {/* <Dialog
         open={dialogProps.show}
         onClose={() => setDialogProps({ show: false })}
         message={dialogProps.message}
         isSuccess={dialogProps.isSuccess}
         isError={dialogProps.isError}
         isAlert={dialogProps.isAlert}
-      />
+      /> */}
     </>
   );
 };
