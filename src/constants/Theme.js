@@ -1,6 +1,10 @@
 import React from 'react';
+import { Dimensions } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+export const windowWidth = Dimensions.get('window').width;
+export const windowHeight = Dimensions.get('window').height;
 
 export const colors = {
   background: '#1A202C',
@@ -183,11 +187,11 @@ export const styles = StyleSheet.create({
   tiles: {
     width: '100%',
     marginTop: 10,
-    alignItems: 'center',
   },
   tile: {
-    height: 230,
+    minHeight: 230,
     width: '100%',
+    alignSelf: 'center',
     borderColor: colors.border,
     borderWidth: 1,
     borderRadius: 15,
@@ -232,10 +236,10 @@ export const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Regular',
     fontSize: 11,
     textAlign: 'right',
-    marginVertical: 5,
+    marginTop: 5,
   },
   itemTile: {
-    height: 80,
+    minHeight: 75,
     width: '100%',
     borderColor: colors.border,
     borderWidth: 1,
@@ -247,15 +251,14 @@ export const styles = StyleSheet.create({
     marginTop: 5,
   },
   searchListTile: {
-    height: 'auto',
+    minHeight: 55,
     flexDirection: 'row',
     alignContent: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+    // paddingVertical: 10,
   },
   itemTileInfoContainer: {
     marginTop: 10,
-    marginBottom: 5,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -311,6 +314,14 @@ export const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Regular',
     color: colors.white,
   },
+  emptyListText: {
+    width: '100%',
+    textAlign: 'center',
+    fontFamily: 'Montserrat-Regular',
+    color: colors.blueish_grey,
+    opacity: 0.7,
+    fontSize: 16,
+  },
 });
 
 export const bottomSheetStyle = {
@@ -332,7 +343,7 @@ export const stackOptions = {
   headerTitleAlign: 'center',
   headerBackTitle: ' ',
   headerBackImage: () => (
-    <View style={{ paddingHorizontal: 5 }}>
+    <View style={{ paddingLeft: 10, paddingRight: 10 }}>
       <Ionicons name="ios-arrow-back" size={28} color={colors.blueish_grey} />
     </View>
   ),
@@ -372,12 +383,13 @@ export const stackOptions = {
 
 export const bottomTabsStyle = {
   backgroundColor: colors.cardBackground,
-  borderTopLeftRadius: 15,
-  borderTopRightRadius: 15,
-  borderColor: 'transparent',
-  overflow: 'hidden',
+  zIndex: 1,
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+  borderColor: colors.cardBackground,
+  overflow: 'visible',
   position: 'absolute',
   bottom: 0,
-  alignItems: 'center',
-  justifyContent: 'center',
+  elevation: 0,
+  justifyContent: 'flex-end',
 };

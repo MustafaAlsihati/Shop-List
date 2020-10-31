@@ -48,9 +48,7 @@ const Search = () => {
           />
         </View>
 
-        <Divider style={{ marginVertical: -10, marginBottom: -5 }} />
-
-        <View style={styles.tiles}>
+        <View style={{ ...styles.tiles, marginTop: -15 }}>
           <TouchableOpacity
             style={styles.fullW}
             onPress={handleTileClick}

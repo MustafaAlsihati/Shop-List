@@ -1,12 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Avatar, Input } from 'react-native-elements';
 import { Feather, Entypo } from '@expo/vector-icons';
 import { colors, styles } from '../../constants/Theme';
 import UserInfoTile from '../../components/UserInfoTile';
+import { getMyListsNumber, getMyItemsNumber } from '../../firebase/index';
 
 const AccountHeader = ({ userData, setUserData }) => {
   const [enableEdit, setEnableEdit] = useState(false);
+  const [userLists, setUserLists] = useState(0);
+  const [userItems, setUserItems] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const listsResult = await getMyListsNumber(userData.uid);
+        const itemsResult = await getMyItemsNumber(userData.uid);
+        setUserLists(listsResult);
+        setUserItems(itemsResult);
+      } catch (err) {
+        console.log('ERR: ', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (userData) getUserData();
+  }, [userData]);
 
   return (
     <>
@@ -58,8 +79,8 @@ const AccountHeader = ({ userData, setUserData }) => {
           marginTop: 10,
         }}
       >
-        <UserInfoTile number={4} name="List(s)" />
-        <UserInfoTile number={15} name="Item(s)" />
+        <UserInfoTile number={userLists} name="List(s)" loading={isLoading} />
+        <UserInfoTile number={userItems} name="Item(s)" loading={isLoading} />
       </View>
     </>
   );

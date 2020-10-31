@@ -1,5 +1,17 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, {
+  useEffect,
+  useRef,
+  useLayoutEffect,
+  useState,
+  useCallback,
+} from 'react';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
 import { Image, Button } from 'react-native-elements';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,17 +19,45 @@ import { styles, colors, stackOptions } from '../../constants/Theme';
 import ItemTile from '../../components/ItemTile';
 import AddItem from './AddItem';
 import Constants from 'expo-constants';
+import Loading from '../../components/Loading';
 import { useHeaderHeight } from '@react-navigation/stack';
+import { getListItems } from '../../firebase/index';
 
-const Items = ({ navigation }) => {
+const List = ({ navigation, route }) => {
+  const { item } = route.params;
+  const headerImage = item.image;
   const refRBSheet = useRef();
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
 
+  const [listItems, setListItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const handleItemClick = (item) => {
-    console.log('Item pressed');
-    navigation.navigate('Item');
+    navigation.navigate('Item', { item });
   };
+
+  const getData = async () => {
+    try {
+      const res = await getListItems(item.list_id);
+      setListItems(res);
+    } catch (err) {
+      console.log('ERR: ', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await getData();
+    setRefreshing(false);
+  }, []);
+
+  useEffect(() => {
+    if (item) getData();
+  }, [item]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -53,6 +93,14 @@ const Items = ({ navigation }) => {
         style={{ marginBottom: 70 + insets.bottom }}
         fadeOutForeground
         stickyHeaderHeight={headerHeight}
+        refreshControl={
+          <RefreshControl
+            colors={[colors.green]}
+            progressBackgroundColor={colors.border}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         renderStickyHeader={() => {
           return (
             <View style={{ height: headerHeight, justifyContent: 'flex-end' }}>
@@ -63,7 +111,7 @@ const Items = ({ navigation }) => {
                   color: colors.blueish_grey,
                 }}
               >
-                Amazon
+                {item.name}
               </Text>
             </View>
           );
@@ -71,7 +119,8 @@ const Items = ({ navigation }) => {
         renderForeground={() => {
           return (
             <Image
-              source={require('../../../assets/amazon.png')}
+              source={{ uri: headerImage }}
+              resizeMode="contain"
               style={{
                 ...styles.fullWH,
                 marginTop: Constants.statusBarHeight,
@@ -82,13 +131,22 @@ const Items = ({ navigation }) => {
         }}
       >
         <View style={{ ...styles.View, marginTop: 5 }}>
-          <TouchableOpacity
-            style={styles.fullW}
-            onPress={handleItemClick}
-            activeOpacity={0.5}
-          >
-            <ItemTile />
-          </TouchableOpacity>
+          {isLoading ? (
+            <Loading size={8} />
+          ) : listItems && listItems.length > 0 ? (
+            listItems.map((item) => (
+              <TouchableOpacity
+                style={styles.fullW}
+                onPress={() => handleItemClick(item)}
+                activeOpacity={0.5}
+                key={item.item_id}
+              >
+                <ItemTile key={item.item_id} item={item} />
+              </TouchableOpacity>
+            ))
+          ) : (
+            <Text style={styles.emptyListText}>List is empty</Text>
+          )}
         </View>
       </ParallaxScrollView>
 
@@ -97,4 +155,4 @@ const Items = ({ navigation }) => {
   );
 };
 
-export default Items;
+export default List;

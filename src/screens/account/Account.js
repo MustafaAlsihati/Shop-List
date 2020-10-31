@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
+  FlatList,
 } from 'react-native';
 import Divider from '../../components/Divider';
 import { MenuItem } from 'react-native-material-menu';
@@ -21,18 +22,26 @@ import OwnedListTile from '../../components/OwnedListTile';
 import Tags from './Tags';
 import AccountHeader from './AccountHeader';
 import MenuPopup from '../../components/MenuPopup';
-import { signOut, getUserInfo } from '../../firebase/index';
+import Loading from '../../components/Loading';
+import { signOut, getUserInfo, getMyLists } from '../../firebase/index';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const Account = ({ navigation }) => {
   const refMenu = useRef();
   const { user } = useContext(AuthContext);
   const [userData, setUserData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getUserData = async () => {
-      const result = await getUserInfo(user.uid);
-      setUserData(result);
+      try {
+        const result = await getUserInfo(user.uid);
+        setUserData(result);
+      } catch (err) {
+        console.log('ERR: ', err);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     if (user) getUserData();
@@ -62,12 +71,14 @@ const Account = ({ navigation }) => {
     });
   }, [navigation]);
 
+  if (isLoading) return <Loading />;
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ScrollView style={{ ...styles.View, ...styles.column }}>
         <AccountHeader {...{ userData, setUserData }} />
         <Divider />
-        <OwnedLists />
+        <OwnedLists {...{ userData }} />
         <Divider />
         <TagLists />
       </ScrollView>
@@ -103,14 +114,48 @@ const TagLists = () => {
   );
 };
 
-const OwnedLists = () => {
+const OwnedLists = ({ userData }) => {
+  const [userLists, setUserLists] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const getUserLists = async () => {
+      try {
+        const result = await getMyLists(userData.uid);
+        setUserLists(result);
+      } catch (err) {
+        console.log('ERR: ', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (userData) getUserLists();
+  }, [userData]);
+
   return (
     <>
       <Text style={styles.ownedLists}>Owned Lists</Text>
       <View style={styles.row}>
-        <TouchableOpacity onPress={() => {}} activeOpacity={0.6}>
-          <OwnedListTile />
-        </TouchableOpacity>
+        {isLoading ? (
+          <Loading size={8} containerStyle={{ paddingVertical: 10 }} />
+        ) : userLists && userLists.length > 0 ? (
+          <FlatList
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={userLists}
+            keyExtractor={(list) => list.list_id}
+            renderItem={({ item }) => {
+              return (
+                <TouchableOpacity onPress={() => {}} activeOpacity={0.6}>
+                  <OwnedListTile item={item} />
+                </TouchableOpacity>
+              );
+            }}
+          />
+        ) : (
+          <Text style={styles.emptyListText}>No lists available</Text>
+        )}
       </View>
     </>
   );

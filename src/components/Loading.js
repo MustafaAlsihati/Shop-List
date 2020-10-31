@@ -1,11 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { styles } from '../constants/Theme';
+import { DotIndicator } from 'react-native-indicators';
 
-const Loading = () => {
+const Loading = ({ size, containerStyle }) => {
   return (
-    <View style={styles.spinnerView}>
-      <ActivityIndicator size="large" color="#3EBB70" />
+    <View style={{ ...styles.spinnerView, ...containerStyle }}>
+      <DotIndicator count={3} size={size ? size : 10} color="#3EBB70" />
     </View>
   );
 };

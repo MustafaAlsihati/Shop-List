@@ -9,6 +9,8 @@ import Search from '../screens/search/Search';
 import Account from '../screens/account/Account';
 import SignIn from '../screens/auth/Signin';
 import SignUp from '../screens/auth/SignUp';
+import Settings from '../screens/settings/Settings';
+import Notifications from '../screens/notifications/Notifications';
 
 const Stack = createStackNavigator();
 
@@ -63,6 +65,34 @@ export const AccountStack = () => {
           title: 'My Account',
         }}
         component={Account}
+      />
+    </Stack.Navigator>
+  );
+};
+
+export const SettingsStack = () => {
+  return (
+    <Stack.Navigator mode="card" screenOptions={stackOptions}>
+      <Stack.Screen
+        name="Settings"
+        options={{
+          title: 'Settings',
+        }}
+        component={Settings}
+      />
+    </Stack.Navigator>
+  );
+};
+
+export const NotificationsStack = () => {
+  return (
+    <Stack.Navigator mode="card" screenOptions={stackOptions}>
+      <Stack.Screen
+        name="Notifications"
+        options={{
+          title: 'Notifications',
+        }}
+        component={Notifications}
       />
     </Stack.Navigator>
   );

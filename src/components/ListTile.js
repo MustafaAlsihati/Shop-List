@@ -2,28 +2,23 @@ import React from 'react';
 import { View, ImageBackground, Text } from 'react-native';
 import { styles } from '../constants/Theme';
 
-const ListTile = () => {
+const ListTile = ({ item }) => {
+  const image = item.image;
+  const authorName = item.users.map((user) =>
+    user.id === item.author ? user.name : null
+  );
+
   return (
     <View style={styles.tile}>
-      <ImageBackground
-        style={styles.fullWH}
-        source={
-          // Image URL:
-          require('../../assets/amazon.png')
-        }
-      >
+      <ImageBackground style={styles.fullWH} source={{ uri: image }}>
         <View style={styles.tileInfo}>
-          <Text style={styles.tileTitle}>
-            {/* Title */}
-            Amazon
-          </Text>
-          <Text style={styles.tileDesc}>
-            {/* Description */}
-            International online shopping website for everything.
-          </Text>
+          <Text style={styles.tileTitle}>{item.name}</Text>
+          <Text style={styles.tileDesc}>{item.description}</Text>
           <Text style={styles.tileMembers}>
-            {/* Author name + (number of members - 1) other(s) */}
-            Mustafa + 1 other(s)
+            {authorName}
+            {item.users.length > 1
+              ? `+ ${item.users.length - 1} other(s)`
+              : null}
           </Text>
         </View>
       </ImageBackground>

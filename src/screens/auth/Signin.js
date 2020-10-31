@@ -8,12 +8,12 @@ import {
   TouchableOpacity,
   Platform,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { styles, colors } from '../../constants/Theme';
 import { Entypo, Feather } from '@expo/vector-icons';
 import { signInWithEmailAndPassword as signIn } from '../../firebase/index';
-import Dialog from '../../components/Dialog';
 import _ from 'lodash';
 
 const userObj = {
@@ -25,13 +25,6 @@ const SignIn = ({ navigation }) => {
   const [user, setUser] = useState(userObj);
   const [loading, setLoading] = useState(false);
   const [hidePassword, setHidePassword] = useState(true);
-  const [dialogProps, setDialogProps] = useState({
-    show: false,
-    message: '',
-    isSuccess: false,
-    isError: false,
-    isAlert: false,
-  });
   const [inputOpacity, setInputOpacity] = useState({
     email: 0.3,
     password: 0.3,
@@ -43,22 +36,36 @@ const SignIn = ({ navigation }) => {
   const onSubmit = async () => {
     setLoading(true);
     if (_.isEmpty(user.email) || _.isEmpty(user.password)) {
-      setDialogProps({
-        show: true,
-        message: 'Please enter your correct username and password',
-        isAlert: true,
-      });
+      Alert.alert(
+        'Try Again',
+        'Please enter your correct username and password',
+        [
+          {
+            text: 'Dismiss',
+            onPress: () => {},
+            style: 'cancel',
+          },
+        ],
+        { cancelable: true }
+      );
       setLoading(false);
       return;
     }
 
     return await signIn(user.email.trim(), user.password).catch((err) => {
       setLoading(false);
-      setDialogProps({
-        show: true,
-        message: 'Error occurred while logging in, please try again',
-        isError: true,
-      });
+      Alert.alert(
+        'Something went wrong',
+        'Error occurred while logging in, please try again',
+        [
+          {
+            text: 'Dismiss',
+            onPress: () => {},
+            style: 'cancel',
+          },
+        ],
+        { cancelable: true }
+      );
     });
   };
 
@@ -155,15 +162,6 @@ const SignIn = ({ navigation }) => {
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-
-      {/* <Dialog
-        open={dialogProps.show}
-        onClose={() => setDialogProps({ show: false })}
-        message={dialogProps.message}
-        isSuccess={dialogProps.isSuccess}
-        isError={dialogProps.isError}
-        isAlert={dialogProps.isAlert}
-      /> */}
     </>
   );
 };

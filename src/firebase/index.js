@@ -64,13 +64,69 @@ export const signOut = async () => {
 
 /* ##################################### Firestore ######################################### */
 
-export const getMyLists = async () => {};
+export const getJoinedList = async (uid) => {
+  const snapshot = await db
+    .collection('lists')
+    .where('userIds', 'array-contains', uid)
+    .get();
 
-export const getMyItems = async () => {};
+  return snapshot.docs.map((doc) => doc.data());
+};
+
+export const getMyLists = async (uid) => {
+  let lists = [];
+  await db
+    .collection('lists')
+    .where('author', '==', uid)
+    .get()
+    .then((snapshot) => {
+      snapshot.forEach((doc) => {
+        lists.push(doc.data());
+      });
+    });
+
+  return lists;
+};
+
+export const getListItems = async (list_id) => {
+  const snapshot = await db
+    .collection('lists')
+    .doc(list_id)
+    .collection('items')
+    .get();
+
+  return snapshot.docs.map((doc) => doc.data());
+};
 
 export const getUserInfo = async (uid) => {
   const snapshot = await USERS.doc(uid).get();
   const data = snapshot.data();
 
   return data;
+};
+
+export const getMyListsNumber = async (uid) => {
+  let listsSize = 0;
+  await db
+    .collection('lists')
+    .where('author', '==', uid)
+    .get()
+    .then((snapshot) => {
+      listsSize = snapshot.size;
+    });
+
+  return Number(listsSize);
+};
+
+export const getMyItemsNumber = async (uid) => {
+  let itemsSize = 0;
+  await db
+    .collectionGroup('items')
+    .where('author.id', '==', uid)
+    .get()
+    .then((snapshot) => {
+      itemsSize = snapshot.size;
+    });
+
+  return Number(itemsSize);
 };

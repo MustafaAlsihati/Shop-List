@@ -5,12 +5,12 @@ import {
   Image,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { styles, colors } from '../../constants/Theme';
 import { Entypo, Feather, AntDesign } from '@expo/vector-icons';
 import { signUpWithEmailAndPassword as signUp } from '../../firebase/index';
-import Dialog from '../../components/Dialog';
 import _ from 'lodash';
 import { signUpValidator } from '../../js/validators';
 
@@ -23,13 +23,6 @@ const userObj = {
 
 const SignUp = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
-  const [dialogProps, setDialogProps] = useState({
-    show: false,
-    message: '',
-    isSuccess: false,
-    isError: false,
-    isAlert: false,
-  });
   const [user, setUser] = useState(userObj);
   const [inputErrs, setInputErrs] = useState(userObj);
   const [hidePassword, setHidePassword] = useState(true);
@@ -48,13 +41,19 @@ const SignUp = ({ navigation }) => {
     }
 
     return await signUp(user).catch((err) => {
-      console.log('ERR:\n', err);
       setLoading(false);
-      setDialogProps({
-        show: true,
-        message: 'Error occurred while registering, please try again',
-        isError: true,
-      });
+      Alert.alert(
+        'Something went wrong',
+        'Error occurred while logging in, please try again',
+        [
+          {
+            text: 'Dismiss',
+            onPress: () => {},
+            style: 'cancel',
+          },
+        ],
+        { cancelable: true }
+      );
     });
   };
 
@@ -222,15 +221,6 @@ const SignUp = ({ navigation }) => {
           </View>
         </View>
       </TouchableWithoutFeedback>
-
-      {/* <Dialog
-        open={dialogProps.show}
-        onClose={() => setDialogProps({ show: false })}
-        message={dialogProps.message}
-        isSuccess={dialogProps.isSuccess}
-        isError={dialogProps.isError}
-        isAlert={dialogProps.isAlert}
-      /> */}
     </>
   );
 };

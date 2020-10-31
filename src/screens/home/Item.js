@@ -6,7 +6,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles, colors } from '../../constants/Theme';
 import AddItem from './AddItem';
 
-const Items = ({ navigation }) => {
+const Items = ({ navigation, route }) => {
+  const { item } = route.params;
+  const headerImage = item.image;
   const refRBSheet = useRef();
   const insets = useSafeAreaInsets();
 
@@ -46,7 +48,7 @@ const Items = ({ navigation }) => {
         }}
       >
         <Image
-          source={require('../../../assets/amazon.png')}
+          source={{ uri: headerImage }}
           style={{
             width: 'auto',
             height: 250,
@@ -61,10 +63,11 @@ const Items = ({ navigation }) => {
             flex: 1,
           }}
         >
-          <Text style={{ ...styles.headerLabel, marginBottom: 5 }}>Amazon</Text>
+          <Text style={{ ...styles.headerLabel, marginBottom: 5 }}>
+            {item.name}
+          </Text>
           <Text style={{ ...styles.tileDesc, fontSize: 13, marginBottom: 15 }}>
-            Product to do something for someone which will benefit him blah blah
-            blah...
+            {item.description ? item.description : null}
           </Text>
           <View
             style={{
@@ -80,7 +83,7 @@ const Items = ({ navigation }) => {
                 textAlignVertical: 'top',
               }}
             >
-              ${' '}
+              {`${item.currency} `}
             </Text>
             <Text
               style={{
@@ -90,11 +93,14 @@ const Items = ({ navigation }) => {
                 textAlignVertical: 'bottom',
               }}
             >
-              399.99
+              {item.price}
             </Text>
           </View>
 
           <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+            <Text style={styles.itemTileInfo}>
+              Created on {item.created.toDate().toDateString()}
+            </Text>
             <Button
               title="VISIT THIS ITEM WEBSITE"
               type="outline"

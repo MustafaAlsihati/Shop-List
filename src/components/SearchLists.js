@@ -5,7 +5,12 @@ import { styles } from '../constants/Theme';
 const SearchLists = () => {
   return (
     <View style={{ ...styles.itemTile, ...styles.searchListTile }}>
-      <View style={styles.column}>
+      <View
+        style={{
+          ...styles.column,
+          justifyContent: 'center',
+        }}
+      >
         <Text style={styles.tileTitle}>
           {/* Title */}
           Amazon
@@ -13,7 +18,7 @@ const SearchLists = () => {
         <Text
           style={{
             ...styles.tileMembers,
-            marginVertical: 0,
+            marginTop: 0,
             textAlign: 'left',
           }}
         >
