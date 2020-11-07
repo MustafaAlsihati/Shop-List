@@ -6,8 +6,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { Input } from 'react-native-elements';
-import Divider from '../../components/Divider';
-import { AntDesign } from '@expo/vector-icons';
+import { Search as SearchIcon } from '../../components/icons';
 import { styles, colors } from '../../constants/Theme';
 import SearchLists from '../../components/SearchLists';
 
@@ -42,9 +41,7 @@ const Search = () => {
             }}
             onFocus={() => setInputOpacity({ searchList: 1.0 })}
             onBlur={() => setInputOpacity({ searchList: 0.3 })}
-            rightIcon={
-              <AntDesign name="search1" size={22} color={colors.blueish_grey} />
-            }
+            rightIcon={<SearchIcon size={22} color={colors.blueish_grey} />}
           />
         </View>
 

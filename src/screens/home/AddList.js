@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Divider from '../../components/Divider';
-import { Feather } from '@expo/vector-icons';
+import { Upload } from '../../components/icons';
 import { styles, colors } from '../../constants/Theme';
 import BottomSheet from '../../components/BottomSheet';
 
@@ -69,11 +69,17 @@ const AddList = ({ refRBSheet }) => {
             onBlur={() => setInputOpacity({ listDesc: 0.3 })}
           />
           <Button
-            title="Upload Picture"
+            title="SELECT PICTURE"
             buttonStyle={styles.uploadBtn}
             titleStyle={styles.btnTitle}
             loading={loading.upload}
-            icon={<Feather name="upload" size={24} color={colors.white} />}
+            icon={
+              <Upload
+                style={{ marginHorizontal: 5 }}
+                size={24}
+                color={colors.white}
+              />
+            }
             onPress={() => {
               setLoading({ upload: true, disableSubmit: true });
             }}

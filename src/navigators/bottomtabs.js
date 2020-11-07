@@ -1,14 +1,13 @@
 import React from 'react';
-import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  AntDesign,
-  Entypo,
-  MaterialCommunityIcons,
-  SimpleLineIcons,
-} from '@expo/vector-icons';
+  Settings,
+  Profile,
+  Notification,
+  Search,
+  Category,
+} from '../components/icons';
 import { bottomTabsStyle, colors } from '../constants/Theme';
 import {
   SearchStack,
@@ -21,8 +20,6 @@ import {
 const Tab = createMaterialBottomTabNavigator();
 
 const BottomTabs = () => {
-  const insets = useSafeAreaInsets();
-
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -30,77 +27,42 @@ const BottomTabs = () => {
         activeColor={colors.green}
         inactiveColor={colors.blueish_grey}
         initialRouteName="Home"
+        shifting="false"
         barStyle={bottomTabsStyle}
       >
         <Tab.Screen
           name="Search"
           component={SearchStack}
           options={{
-            tabBarIcon: ({ color }) => (
-              <AntDesign name="search1" size={24} color={color} />
-            ),
+            tabBarIcon: ({ color }) => <Search color={color} />,
           }}
         />
         <Tab.Screen
           name="Notifications"
           component={NotificationsStack}
           options={{
-            tabBarIcon: ({ color }) => (
-              <AntDesign name="notification" size={24} color={color} />
-            ),
+            tabBarIcon: ({ color }) => <Notification color={color} />,
           }}
         />
         <Tab.Screen
           name="Home"
           component={HomeStack}
           options={{
-            tabBarIcon: ({ color, focused }) => (
-              <View
-                style={{
-                  borderRadius: 65 / 2,
-                  backgroundColor: colors.green,
-                  position: 'absolute',
-                  height: 65,
-                  width: 65,
-                  bottom: -5,
-                  justifyContent: 'space-around',
-                  alignItems: 'center',
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 1,
-                  },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 1.65,
-                  elevation: 1,
-                  zIndex: 99,
-                }}
-              >
-                <Entypo name="list" size={24} color={colors.border} />
-              </View>
-            ),
+            tabBarIcon: ({ color }) => <Category color={color} />,
           }}
         />
         <Tab.Screen
           name="Account"
           component={AccountStack}
           options={{
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons
-                name="account-circle-outline"
-                size={24}
-                color={color}
-              />
-            ),
+            tabBarIcon: ({ color }) => <Profile color={color} />,
           }}
         />
         <Tab.Screen
           name="Settings"
           component={SettingsStack}
           options={{
-            tabBarIcon: ({ color }) => (
-              <SimpleLineIcons name="settings" size={24} color={color} />
-            ),
+            tabBarIcon: ({ color }) => <Settings color={color} />,
           }}
         />
       </Tab.Navigator>

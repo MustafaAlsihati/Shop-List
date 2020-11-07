@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-  useLayoutEffect,
-} from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -13,21 +7,19 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   FlatList,
+  Alert,
 } from 'react-native';
 import Divider from '../../components/Divider';
-import { MenuItem } from 'react-native-material-menu';
-import { Ionicons } from '@expo/vector-icons';
+import { Logout } from '../../components/icons';
 import { colors, styles } from '../../constants/Theme';
 import OwnedListTile from '../../components/OwnedListTile';
 import Tags from './Tags';
 import AccountHeader from './AccountHeader';
-import MenuPopup from '../../components/MenuPopup';
 import Loading from '../../components/Loading';
 import { signOut, getUserInfo, getMyLists } from '../../firebase/index';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const Account = ({ navigation }) => {
-  const refMenu = useRef();
   const { user } = useContext(AuthContext);
   const [userData, setUserData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -50,26 +42,34 @@ const Account = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <MenuPopup
-          {...{ refMenu }}
-          menuItems={
-            <MenuItem onPress={signOut}>
-              <Text style={styles.menuItemText}>Sign Out</Text>
-            </MenuItem>
-          }
-        >
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => refMenu.current.show()}
-          >
-            <View style={{ paddingHorizontal: 15 }}>
-              <Ionicons name="md-more" size={24} color={colors.blueish_grey} />
-            </View>
-          </TouchableOpacity>
-        </MenuPopup>
+        <TouchableOpacity activeOpacity={0.7} onPress={signOutClickHandle}>
+          <View style={{ paddingHorizontal: 15 }}>
+            <Logout size={24} color={colors.blueish_grey} />
+          </View>
+        </TouchableOpacity>
       ),
     });
   }, [navigation]);
+
+  const signOutClickHandle = () => {
+    Alert.alert(
+      'Confirm',
+      'Are you sure you want to sign out from this account?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: signOut,
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   if (isLoading) return <Loading />;
 

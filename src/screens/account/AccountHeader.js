@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Avatar, Input } from 'react-native-elements';
-import { Feather, Entypo } from '@expo/vector-icons';
+import { View, Text } from 'react-native';
+import { Avatar } from 'react-native-elements';
 import { colors, styles } from '../../constants/Theme';
 import UserInfoTile from '../../components/UserInfoTile';
 import { getMyListsNumber, getMyItemsNumber } from '../../firebase/index';
 
-const AccountHeader = ({ userData, setUserData }) => {
-  const [enableEdit, setEnableEdit] = useState(false);
+const AccountHeader = ({ userData }) => {
   const [userLists, setUserLists] = useState(0);
   const [userItems, setUserItems] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +29,7 @@ const AccountHeader = ({ userData, setUserData }) => {
 
   return (
     <>
-      <View style={{ ...styles.row, alignItems: 'center' }}>
+      <View style={{ ...styles.column, alignItems: 'center' }}>
         <Avatar
           rounded
           title="ME"
@@ -44,32 +42,9 @@ const AccountHeader = ({ userData, setUserData }) => {
             backgroundColor: colors.grayish_white,
           }}
         />
-        {enableEdit ? (
-          <View style={{ ...styles.row, alignItems: 'center' }}>
-            <Input
-              containerStyle={{ width: 230, marginTop: 5 }}
-              inputContainerStyle={{ borderBottomColor: colors.green }}
-              inputStyle={{ ...styles.textfieldInput, fontSize: 20 }}
-              placeholder={userData.username}
-            />
-            <TouchableOpacity
-              style={{ paddingHorizontal: 5 }}
-              activeOpacity={0.5}
-              onPress={() => setEnableEdit(false)}
-            >
-              <Entypo name="check" size={30} color={colors.green} />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={{ ...styles.row, alignItems: 'center' }}
-            activeOpacity={0.7}
-            onPress={() => setEnableEdit(true)}
-          >
-            <Text style={styles.userName}>{userData.username}</Text>
-            <Feather name="edit-3" size={18} color={colors.green} />
-          </TouchableOpacity>
-        )}
+        <Text style={{ ...styles.userName, marginVertical: 10 }}>
+          {userData.username}
+        </Text>
       </View>
       <View
         style={{

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
 import { StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { ArrowLeft } from '../components/icons';
 
 export const windowWidth = Dimensions.get('window').width;
 export const windowHeight = Dimensions.get('window').height;
@@ -343,8 +343,8 @@ export const stackOptions = {
   headerTitleAlign: 'center',
   headerBackTitle: ' ',
   headerBackImage: () => (
-    <View style={{ paddingLeft: 10, paddingRight: 10 }}>
-      <Ionicons name="ios-arrow-back" size={28} color={colors.blueish_grey} />
+    <View>
+      <ArrowLeft size={28} />
     </View>
   ),
   headerTitleStyle: {
@@ -383,13 +383,11 @@ export const stackOptions = {
 
 export const bottomTabsStyle = {
   backgroundColor: colors.cardBackground,
-  zIndex: 1,
   borderTopLeftRadius: 20,
   borderTopRightRadius: 20,
   borderColor: colors.cardBackground,
-  overflow: 'visible',
+  overflow: 'hidden',
   position: 'absolute',
   bottom: 0,
   elevation: 0,
-  justifyContent: 'flex-end',
 };
