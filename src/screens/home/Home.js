@@ -84,7 +84,7 @@ const Home = ({ navigation }) => {
       <FlatList
         style={{
           ...styles.tiles,
-          marginBottom: 70 + insets.bottom,
+          marginBottom: 60 + insets.bottom,
         }}
         showsVerticalScrollIndicator={false}
         data={lists}

@@ -17,20 +17,23 @@ import {
   NotificationsStack,
   SettingsStack,
 } from './stacks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabs = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <NavigationContainer>
       <Tab.Navigator
         initialRouteName="Home"
-        lazy="false"
         tabBarOptions={{
           showLabel: false,
           activeTintColor: colors.green,
           inactiveTintColor: colors.blueish_grey,
-          style: bottomTabsStyle,
+          lazy: false,
+          style: { ...bottomTabsStyle, height: 60 + insets.bottom },
         }}
         style={bottomTabsStyle}
       >

@@ -35,7 +35,7 @@ const Items = ({ navigation, route }) => {
     <View
       style={{
         ...styles.View,
-        paddingBottom: 75 + insets.bottom,
+        paddingBottom: 70 + insets.bottom,
       }}
     >
       <View
@@ -63,10 +63,23 @@ const Items = ({ navigation, route }) => {
             flex: 1,
           }}
         >
-          <Text style={{ ...styles.headerLabel, marginBottom: 5 }}>
+          <Text
+            style={{
+              ...styles.headerLabel,
+              color: colors.grayish_white,
+              marginBottom: 5,
+            }}
+          >
             {item.name}
           </Text>
-          <Text style={{ ...styles.tileDesc, fontSize: 13, marginBottom: 15 }}>
+          <Text
+            style={{
+              ...styles.tileDesc,
+              color: colors.blueish_grey,
+              fontSize: 14,
+              marginBottom: 15,
+            }}
+          >
             {item.description ? item.description : null}
           </Text>
           <View
