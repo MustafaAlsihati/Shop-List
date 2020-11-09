@@ -322,6 +322,14 @@ export const styles = StyleSheet.create({
     opacity: 0.7,
     fontSize: 16,
   },
+  bottomTabsCircle: {
+    backgroundColor: colors.green,
+    width: 5,
+    height: 5,
+    borderRadius: 5 / 2,
+    alignSelf: 'center',
+    marginTop: 3,
+  },
 });
 
 export const bottomSheetStyle = {
@@ -385,9 +393,10 @@ export const bottomTabsStyle = {
   backgroundColor: colors.cardBackground,
   borderTopLeftRadius: 20,
   borderTopRightRadius: 20,
+  height: 60,
   borderColor: colors.cardBackground,
-  overflow: 'hidden',
   position: 'absolute',
   bottom: 0,
   elevation: 0,
+  borderTopWidth: 0,
 };
