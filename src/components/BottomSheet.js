@@ -9,7 +9,7 @@ const BottomSheet = ({ children, refRBSheet, onClose, height }) => {
       onClose={onClose}
       height={height}
       closeOnDragDown={true}
-      animationType="fade"
+      animationType="none"
       keyboardAvoidingViewEnabled={true}
       customStyles={bottomSheetStyle}
     >

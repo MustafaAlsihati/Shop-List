@@ -20,10 +20,6 @@ const db = firebaseApp.firestore();
 const auth = firebaseApp.auth();
 const storage = firebaseApp.storage();
 
-/* #################################### Collections ######################################### */
-
-const USERS = db.collection('users');
-
 /* ######################################## Auth ############################################ */
 
 export const chechAuth = async (cb) => {
@@ -45,7 +41,7 @@ export const signUpWithEmailAndPassword = async (user) => {
     .createUserWithEmailAndPassword(user.email, user.password)
     .then((result) => {
       const uid = result.user.uid;
-      return USERS.doc(uid).set({
+      return db.collection('users').doc(uid).set({
         username: user.username,
         email: user.email,
         uid,
@@ -99,7 +95,7 @@ export const getListItems = async (list_id) => {
 };
 
 export const getUserInfo = async (uid) => {
-  const snapshot = await USERS.doc(uid).get();
+  const snapshot = await db.collection('users').doc(uid).get();
   const data = snapshot.data();
 
   return data;

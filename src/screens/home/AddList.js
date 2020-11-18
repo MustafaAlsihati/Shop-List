@@ -5,6 +5,7 @@ import Divider from '../../components/Divider';
 import { Upload } from '../../components/icons';
 import { styles, colors } from '../../constants/Theme';
 import BottomSheet from '../../components/BottomSheet';
+import * as ImagePicker from 'expo-image-picker';
 
 const inputInitState = {
   listName: 0.3,
@@ -20,6 +21,29 @@ const loadingInitState = {
 const AddList = ({ refRBSheet }) => {
   const [inputOpacity, setInputOpacity] = useState(inputInitState);
   const [loading, setLoading] = useState(loadingInitState);
+
+  const [list, setList] = useState({});
+
+  const handleInputChange = (val, key) =>
+    setList((prev) => ({ ...prev, [key]: val }));
+
+  const pickImage = async () => {
+    setLoading({ upload: true, disableSubmit: true });
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+
+    setLoading({ upload: false, disableSubmit: false });
+  };
 
   return (
     <>
@@ -37,6 +61,8 @@ const AddList = ({ refRBSheet }) => {
             autoCapitalize="sentences"
             autoCorrect={false}
             maxLength={35}
+            value={list.name}
+            onChangeText={(text) => handleInputChange(text, 'name')}
             containerStyle={styles.textfieldContainer}
             inputStyle={styles.textfieldInput}
             placeholderTextColor="#A0AEC0"
@@ -54,6 +80,8 @@ const AddList = ({ refRBSheet }) => {
             maxLength={150}
             multiline
             numberOfLines={3}
+            value={list.description}
+            onChangeText={(text) => handleInputChange(text, 'description')}
             containerStyle={styles.textfieldContainer}
             inputStyle={{
               ...styles.textfieldInput,
@@ -69,7 +97,7 @@ const AddList = ({ refRBSheet }) => {
             onBlur={() => setInputOpacity({ listDesc: 0.3 })}
           />
           <Button
-            title="SELECT PICTURE"
+            title={list.image ? list.image : 'SELECT PICTURE'}
             buttonStyle={styles.uploadBtn}
             titleStyle={styles.btnTitle}
             loading={loading.upload}
@@ -80,9 +108,7 @@ const AddList = ({ refRBSheet }) => {
                 color={colors.white}
               />
             }
-            onPress={() => {
-              setLoading({ upload: true, disableSubmit: true });
-            }}
+            onPress={pickImage}
           />
         </View>
 
