@@ -7,6 +7,7 @@ import Category from './Category';
 import Edit from './Edit';
 import Logout from './Logout';
 import Upload from './Upload';
+import Home from './Home';
 
 export {
   Profile,
@@ -18,4 +19,5 @@ export {
   Edit,
   Logout,
   Upload,
+  Home,
 };

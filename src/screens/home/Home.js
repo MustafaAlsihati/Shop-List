@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { styles, colors } from '../../constants/Theme';
-import { getUserInfo, getJoinedList } from '../../firebase/index';
+import { getJoinedList } from '../../firebase/index';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ListTile from '../../components/ListTile';
@@ -30,9 +30,7 @@ const Home = ({ navigation }) => {
   const refRBSheet = useRef();
   const insets = useSafeAreaInsets();
 
-  const handleTileClick = (item) => {
-    navigation.navigate('List', { item });
-  };
+  const handleTileClick = (item) => navigation.navigate('List', { item });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -54,9 +52,7 @@ const Home = ({ navigation }) => {
 
   const getData = async () => {
     try {
-      const userData = await getUserInfo(user.uid);
       const listsResult = await getJoinedList(user.uid);
-      setUsername(userData.username);
       setLists(listsResult);
     } catch (err) {
       console.log('ERR: ', err);
@@ -66,7 +62,10 @@ const Home = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (user) getData();
+    if (user) {
+      setUsername(user.username);
+      getData();
+    }
   }, [user]);
 
   const [refreshing, setRefreshing] = useState(false);

@@ -1,4 +1,5 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
+import _ from 'lodash';
 import { StatusBar } from 'expo-status-bar';
 import Loading from './src/components/Loading';
 import { useFont } from './src/hooks/useFont';
@@ -17,7 +18,7 @@ const App = () => {
   // check Auth and redirect:
   return (
     <>
-      {user ? <BottomTabs /> : <AuthStack />}
+      {!_.isEmpty(user) ? <BottomTabs /> : <AuthStack />}
       <StatusBar style="light" translucent />
     </>
   );

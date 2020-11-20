@@ -1,43 +1,32 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   View,
   ScrollView,
-  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
-  FlatList,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import Divider from '../../components/Divider';
 import { Logout } from '../../components/icons';
 import { colors, styles } from '../../constants/Theme';
-import OwnedListTile from '../../components/OwnedListTile';
-import Tags from './Tags';
 import AccountHeader from './AccountHeader';
-import Loading from '../../components/Loading';
-import { signOut, getUserInfo, getMyLists } from '../../firebase/index';
+import AccountContent from './AccountContent';
+import { signOut, getMyLists, getMyItems } from '../../firebase/index';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const Account = ({ navigation }) => {
   const { user } = useContext(AuthContext);
-  const [userData, setUserData] = useState({});
+  const [userLists, setUserLists] = useState([]);
+  const [userItems, setUserItems] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const result = await getUserInfo(user.uid);
-        setUserData(result);
-      } catch (err) {
-        console.log('ERR: ', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (user) getUserData();
-  }, [user]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -71,93 +60,63 @@ const Account = ({ navigation }) => {
     );
   };
 
-  if (isLoading) return <Loading />;
+  const getUserLists = async () => {
+    try {
+      const result = await getMyLists(user.uid);
+      setUserLists(result);
+    } catch (err) {
+      console.log('ERR @ getUserLists: ', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getUserItems = async () => {
+    try {
+      const itemsResult = await getMyItems(user.uid);
+      setUserItems(itemsResult);
+    } catch (err) {
+      console.log('ERR @ getUserItems: ', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      getUserLists();
+      getUserItems();
+    }
+  }, []);
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    if (user) {
+      await getUserLists();
+      await getUserItems();
+    }
+    setRefreshing(false);
+  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView style={{ ...styles.View, ...styles.column }}>
-        <AccountHeader {...{ userData, setUserData }} />
+      <ScrollView
+        style={{ ...styles.View, ...styles.column }}
+        refreshControl={
+          <RefreshControl
+            colors={[colors.green]}
+            progressBackgroundColor={colors.border}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      >
+        <AccountHeader {...{ user, userLists, userItems, isLoading }} />
         <Divider />
-        <OwnedLists {...{ userData }} />
-        <Divider />
-        <TagLists />
+        <AccountContent {...{ user, userLists, isLoading }} />
       </ScrollView>
     </TouchableWithoutFeedback>
-  );
-};
-
-const TagLists = () => {
-  return (
-    <View style={{ ...styles.column, marginBottom: 75 }}>
-      <View
-        style={{
-          ...styles.row,
-          justifyContent: 'space-between',
-          marginBottom: 5,
-        }}
-      >
-        <Text style={styles.ownedLists}>Tags</Text>
-        <Text style={styles.addTags}>Add Tags</Text>
-      </View>
-      <View style={{ ...styles.row, flexWrap: 'wrap' }}>
-        <Tags name="PC" />
-        <Tags name="Newegg" />
-        <Tags name="Gaming" />
-        <Tags name="Clothes" />
-        <Tags name="Stuff" />
-        <Tags name="Phones" />
-        <Tags name="PlayStation" />
-        <Tags name="Xbox Series X" />
-        <Tags name="Mobile" />
-      </View>
-    </View>
-  );
-};
-
-const OwnedLists = ({ userData }) => {
-  const [userLists, setUserLists] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const getUserLists = async () => {
-      try {
-        const result = await getMyLists(userData.uid);
-        setUserLists(result);
-      } catch (err) {
-        console.log('ERR: ', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (userData) getUserLists();
-  }, [userData]);
-
-  return (
-    <>
-      <Text style={styles.ownedLists}>Owned Lists</Text>
-      <View style={styles.row}>
-        {isLoading ? (
-          <Loading size={8} containerStyle={{ paddingVertical: 10 }} />
-        ) : userLists && userLists.length > 0 ? (
-          <FlatList
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            data={userLists}
-            keyExtractor={(list) => list.list_id}
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity onPress={() => {}} activeOpacity={0.6}>
-                  <OwnedListTile item={item} />
-                </TouchableOpacity>
-              );
-            }}
-          />
-        ) : (
-          <Text style={styles.emptyListText}>No lists available</Text>
-        )}
-      </View>
-    </>
   );
 };
 

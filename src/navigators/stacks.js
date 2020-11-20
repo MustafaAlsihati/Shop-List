@@ -66,13 +66,6 @@ export const AccountStack = () => {
         }}
         component={Account}
       />
-    </Stack.Navigator>
-  );
-};
-
-export const SettingsStack = () => {
-  return (
-    <Stack.Navigator mode="card" screenOptions={stackOptions}>
       <Stack.Screen
         name="Settings"
         options={{

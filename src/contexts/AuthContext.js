@@ -1,17 +1,36 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { chechAuth } from '../firebase';
+import { db, auth } from '../firebase';
+
+export const AuthContext = createContext({
+  user: null,
+  loading: true,
+});
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = () => {
-      chechAuth((user) => {
-        setLoading(false);
-        setUser(user);
+    const checkAuth = () =>
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          const uid = user.uid;
+          db.collection('users')
+            .doc(uid)
+            .onSnapshot(
+              (doc) => {
+                const userData = { ...doc.data(), uid };
+                setUser(userData);
+                setLoading(false);
+              },
+              (err) => {
+                console.log('ERR @ AuthContext:\n\n', err.message);
+              }
+            );
+        } else {
+          setTimeout(() => setLoading(false), 1500);
+        }
       });
-    };
 
     return checkAuth();
   }, []);
@@ -22,8 +41,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-export const AuthContext = createContext({
-  user: null,
-  loading: true,
-});

@@ -16,15 +16,9 @@ var firebaseConfig = {
 };
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
-const db = firebaseApp.firestore();
-const auth = firebaseApp.auth();
-const storage = firebaseApp.storage();
-
-/* ######################################## Auth ############################################ */
-
-export const chechAuth = async (cb) => {
-  return auth.onAuthStateChanged(cb);
-};
+export const db = firebaseApp.firestore();
+export const auth = firebaseApp.auth();
+export const storage = firebaseApp.storage();
 
 export const signInWithEmailAndPassword = async (email, password) => {
   return firebase
@@ -70,18 +64,21 @@ export const getJoinedList = async (uid) => {
 };
 
 export const getMyLists = async (uid) => {
-  let lists = [];
-  await db
+  const snapshot = await db
     .collection('lists')
     .where('author', '==', uid)
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        lists.push(doc.data());
-      });
-    });
+    .get();
 
-  return lists;
+  return snapshot.docs.map((doc) => doc.data());
+};
+
+export const getMyItems = async (uid) => {
+  const snapshot = await db
+    .collectionGroup('items')
+    .where('author.id', '==', uid)
+    .get();
+
+  return snapshot.docs.map((doc) => doc.data());
 };
 
 export const getListItems = async (list_id) => {
@@ -92,37 +89,4 @@ export const getListItems = async (list_id) => {
     .get();
 
   return snapshot.docs.map((doc) => doc.data());
-};
-
-export const getUserInfo = async (uid) => {
-  const snapshot = await db.collection('users').doc(uid).get();
-  const data = snapshot.data();
-
-  return data;
-};
-
-export const getMyListsNumber = async (uid) => {
-  let listsSize = 0;
-  await db
-    .collection('lists')
-    .where('author', '==', uid)
-    .get()
-    .then((snapshot) => {
-      listsSize = snapshot.size;
-    });
-
-  return Number(listsSize);
-};
-
-export const getMyItemsNumber = async (uid) => {
-  let itemsSize = 0;
-  await db
-    .collectionGroup('items')
-    .where('author.id', '==', uid)
-    .get()
-    .then((snapshot) => {
-      itemsSize = snapshot.size;
-    });
-
-  return Number(itemsSize);
 };

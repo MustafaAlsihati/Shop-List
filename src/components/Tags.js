@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
 import { Entypo, AntDesign } from '@expo/vector-icons';
-import { colors, styles } from '../../constants/Theme';
+import { colors, styles } from '../constants/Theme';
 
 const Tags = ({ name }) => {
   const [editChip, setEditChip] = useState(false);
@@ -21,7 +21,7 @@ const Tags = ({ name }) => {
               size={22}
               style={{ paddingLeft: 5 }}
               color={colors.grayish_white}
-              onPress={() => {}}
+              onPress={handleChipDelete}
             />
           </>
         ) : (
