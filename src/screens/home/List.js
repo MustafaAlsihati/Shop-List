@@ -71,7 +71,7 @@ const List = ({ navigation, route }) => {
             fontSize: 14,
             paddingHorizontal: 5,
           }}
-          title="Add List"
+          title="Add Item"
           type="clear"
           onPress={() => refRBSheet.current.open()}
         />
@@ -150,7 +150,13 @@ const List = ({ navigation, route }) => {
         </View>
       </ParallaxScrollView>
 
-      <AddItem refRBSheet={refRBSheet} />
+      <AddItem
+        {...{ refRBSheet, list_id: item.list_id }}
+        onClose={() => {
+          refRBSheet.current.close();
+          onRefresh();
+        }}
+      />
     </View>
   );
 };

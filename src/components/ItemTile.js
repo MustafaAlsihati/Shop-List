@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { styles } from '../constants/Theme';
+import Currencies from '../constants/Currencies';
 
 const ItemTile = ({ item }) => {
   return (
@@ -11,7 +12,7 @@ const ItemTile = ({ item }) => {
       <Text style={{ ...styles.tileTitle, fontSize: 16 }}>{item.name}</Text>
       <View style={styles.itemTileInfoContainer}>
         <Text style={styles.itemTileInfo}>
-          {item.price} {item.currency}
+          {item.price} {Currencies[item.currency_code].symbol}
         </Text>
         <Text style={styles.itemTileInfo}>
           {item.created.toDate().toDateString()}

@@ -17,7 +17,7 @@ const OwnedListTile = ({ item }) => {
     >
       <ImageBackground style={styles.fullWH} source={{ uri: image }}>
         <View style={{ ...styles.tileInfo, justifyContent: 'center' }}>
-          <Text style={styles.tileTitle}>{item.name}</Text>
+          <Text style={{ ...styles.tileTitle, fontSize: 14 }}>{item.name}</Text>
         </View>
       </ImageBackground>
     </View>

@@ -189,7 +189,7 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   tile: {
-    minHeight: 230,
+    height: 230,
     width: '100%',
     alignSelf: 'center',
     borderColor: colors.border,

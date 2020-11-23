@@ -55,7 +55,7 @@ const Home = ({ navigation }) => {
       const listsResult = await getJoinedList(user.uid);
       setLists(listsResult);
     } catch (err) {
-      console.log('ERR: ', err);
+      console.log('ERR @ getData (Home.js): ', err);
     } finally {
       setIsLoading(false);
     }
@@ -120,7 +120,13 @@ const Home = ({ navigation }) => {
         }
       />
 
-      <AddList refRBSheet={refRBSheet} />
+      <AddList
+        {...{ refRBSheet, onRefresh }}
+        onClose={() => {
+          refRBSheet.current.close();
+          onRefresh();
+        }}
+      />
     </View>
   );
 };

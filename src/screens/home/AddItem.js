@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { Text, View } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, Alert } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Divider from '../../components/Divider';
 import { Feather } from '@expo/vector-icons';
+import { Upload } from '../../components/icons';
 import { styles, colors } from '../../constants/Theme';
 import BottomSheet from '../../components/BottomSheet';
+import * as ImagePicker from 'expo-image-picker';
+import { addItem } from '../../firebase/index';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const inputInitState = {
   ItemName: 0.3,
@@ -14,18 +18,64 @@ const inputInitState = {
 };
 
 const loadingInitState = {
+  upload: false,
   submit: false,
+  disableSubmit: false,
 };
 
-const AddList = ({ refRBSheet }) => {
+const AddItem = ({ refRBSheet, onClose, list_id }) => {
+  const { user } = useContext(AuthContext);
   const [inputOpacity, setInputOpacity] = useState(inputInitState);
   const [loading, setLoading] = useState(loadingInitState);
+
+  const [item, setItem] = useState({});
+
+  const handleInputChange = (val, key) =>
+    setItem((prev) => ({ ...prev, [key]: val }));
+
+  const pickImage = async () => {
+    setLoading({ upload: true, disableSubmit: true });
+    const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Sorry, we need camera roll permissions to make this work!');
+    } else {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [6, 6],
+        quality: 1,
+      });
+
+      if (!result.cancelled) {
+        handleInputChange(result.uri, 'image');
+      }
+    }
+    setLoading({ upload: false, disableSubmit: false });
+  };
+
+  const handleSubmit = async () => {
+    setLoading({ submit: true, disableSubmit: true });
+
+    return addItem(
+      item,
+      list_id,
+      user,
+      () => {
+        setItem({});
+        onClose();
+      },
+      (err) => {
+        console.log('ERR at addItem:\n', err);
+        setLoading({ upload: false, disableSubmit: false });
+      }
+    );
+  };
 
   return (
     <>
       <BottomSheet
         refRBSheet={refRBSheet}
-        height={450}
+        height={465}
         onClose={() => {
           setInputOpacity(inputInitState);
           setLoading(loadingInitState);
@@ -37,6 +87,8 @@ const AddList = ({ refRBSheet }) => {
             autoCapitalize="sentences"
             autoCorrect={false}
             maxLength={35}
+            value={item.name}
+            onChangeText={(text) => handleInputChange(text, 'name')}
             containerStyle={styles.textfieldContainer}
             inputStyle={styles.textfieldInput}
             placeholderTextColor="#A0AEC0"
@@ -48,22 +100,18 @@ const AddList = ({ refRBSheet }) => {
             onBlur={() => setInputOpacity({ ItemName: 0.3 })}
           />
           <Input
-            placeholder="Item Description (Optional)"
+            placeholder="Item Short Description (Optional)"
             autoCapitalize="sentences"
             autoCorrect={false}
-            maxLength={150}
-            multiline
-            numberOfLines={3}
+            value={item.description}
+            onChangeText={(text) => handleInputChange(text, 'description')}
+            maxLength={80}
             containerStyle={styles.textfieldContainer}
-            inputStyle={{
-              ...styles.textfieldInput,
-              textAlignVertical: 'top',
-            }}
+            inputStyle={styles.textfieldInput}
             placeholderTextColor="#A0AEC0"
             inputContainerStyle={{
               ...styles.textfield,
               backgroundColor: `rgba(255, 255, 255, ${inputOpacity.ItemDesc})`,
-              height: 100,
             }}
             onFocus={() => setInputOpacity({ ItemDesc: 1.0 })}
             onBlur={() => setInputOpacity({ ItemDesc: 0.3 })}
@@ -73,6 +121,8 @@ const AddList = ({ refRBSheet }) => {
             autoCapitalize="none"
             autoCorrect={false}
             maxLength={35}
+            value={item.link}
+            onChangeText={(text) => handleInputChange(text, 'link')}
             containerStyle={styles.textfieldContainer}
             inputStyle={styles.textfieldInput}
             placeholderTextColor="#A0AEC0"
@@ -91,6 +141,8 @@ const AddList = ({ refRBSheet }) => {
             autoCapitalize="none"
             autoCorrect={false}
             maxLength={35}
+            value={item.price}
+            onChangeText={(text) => handleInputChange(text, 'price')}
             containerStyle={styles.textfieldContainer}
             inputStyle={styles.textfieldInput}
             placeholderTextColor="#A0AEC0"
@@ -102,14 +154,38 @@ const AddList = ({ refRBSheet }) => {
             onBlur={() => setInputOpacity({ ItemPrice: 0.3 })}
             rightIcon={
               <Text style={styles.priceUnit}>
-                {/* PRICE UNIT */}
-                USD
+                {user.settings.currency.symbol}
               </Text>
             }
           />
+          <Button
+            title={
+              item.image
+                ? item.image.length > 25
+                  ? item.image.substring(0, 11) +
+                    '...' +
+                    item.image.substring(
+                      item.image.length - 14,
+                      item.image.length
+                    )
+                  : item.image
+                : 'SELECT PICTURE'
+            }
+            buttonStyle={styles.uploadBtn}
+            titleStyle={styles.btnTitle}
+            loading={loading.upload}
+            icon={
+              <Upload
+                style={{ marginHorizontal: 5 }}
+                size={24}
+                color={colors.white}
+              />
+            }
+            onPress={pickImage}
+          />
         </View>
 
-        <Divider style={{ marginTop: -10 }} />
+        <Divider />
 
         <View style={styles.BSInputFieldContainer}>
           <Button
@@ -118,9 +194,7 @@ const AddList = ({ refRBSheet }) => {
             titleStyle={styles.btnTitle}
             loading={loading.submit}
             disabled={loading.disableSubmit}
-            onPress={() => {
-              setLoading({ submit: true });
-            }}
+            onPress={handleSubmit}
           />
         </View>
       </BottomSheet>
@@ -128,4 +202,4 @@ const AddList = ({ refRBSheet }) => {
   );
 };
 
-export default AddList;
+export default AddItem;

@@ -58,6 +58,7 @@ export const getJoinedList = async (uid) => {
   const snapshot = await db
     .collection('lists')
     .where('userIds', 'array-contains', uid)
+    .orderBy('created', 'desc')
     .get();
 
   return snapshot.docs.map((doc) => doc.data());
@@ -67,6 +68,7 @@ export const getMyLists = async (uid) => {
   const snapshot = await db
     .collection('lists')
     .where('author', '==', uid)
+    .orderBy('created', 'desc')
     .get();
 
   return snapshot.docs.map((doc) => doc.data());
@@ -76,6 +78,7 @@ export const getMyItems = async (uid) => {
   const snapshot = await db
     .collectionGroup('items')
     .where('author.id', '==', uid)
+    .orderBy('created', 'desc')
     .get();
 
   return snapshot.docs.map((doc) => doc.data());
@@ -86,7 +89,138 @@ export const getListItems = async (list_id) => {
     .collection('lists')
     .doc(list_id)
     .collection('items')
+    .orderBy('created', 'desc')
     .get();
 
   return snapshot.docs.map((doc) => doc.data());
+};
+
+const uploadImage = async (data, id) => {
+  const response = await fetch(data.image);
+  const blob = await response.blob();
+  const uploadTask = storage
+    .ref(`images/${data.name.replace(/\s/g, '')}-${id}`)
+    .put(blob);
+
+  return new Promise((resolve, reject) => {
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => console.log('image uploading: ', snapshot),
+      (error) => reject(error),
+      async () => {
+        const image_url = await storage
+          .ref('images')
+          .child(`${data.name.replace(/\s/g, '')}-${id}`)
+          .getDownloadURL();
+
+        resolve(image_url);
+      }
+    );
+  });
+};
+
+export const addList = async (list, user, cb, err) => {
+  const list_id = db.collection('lists').doc().id;
+  const uploaded_image_url = list.image
+    ? await uploadImage(list, list_id)
+    : null;
+
+  const new_list = JSON.parse(
+    JSON.stringify({
+      ...list,
+      list_id,
+      image: uploaded_image_url,
+      author: user.uid,
+      userIds: [user.uid],
+      users: [
+        {
+          id: user.uid,
+          name: user.username,
+        },
+      ],
+    })
+  );
+
+  return db
+    .collection('lists')
+    .doc(list_id)
+    .set({
+      ...new_list,
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+    .then(() => {
+      if (cb) cb();
+    })
+    .catch((error) => {
+      if (err) err(error);
+    });
+};
+
+export const addItem = async (item, list_id, user, cb, err) => {
+  const item_id = db.collection('lists').doc(list_id).collection('items').doc()
+    .id;
+  const uploaded_image_url = item.image
+    ? await uploadImage(item, item_id)
+    : null;
+
+  const new_item = JSON.parse(
+    JSON.stringify({
+      ...item,
+      item_id,
+      list_id,
+      image: uploaded_image_url,
+      author: {
+        id: user.uid,
+        username: user.username,
+      },
+      currency_code: user.settings.currency.code,
+    })
+  );
+
+  return db
+    .collection('lists')
+    .doc(list_id)
+    .collection('items')
+    .doc(item_id)
+    .set({
+      ...new_item,
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+    .then(() => {
+      if (cb) cb();
+    })
+    .catch((error) => {
+      if (err) err(error);
+    });
+};
+
+export const editItem = async (item, user, cb, err) => {
+  const is_link = (str) => {
+    if (str.startsWith('https://firebasestorage.googleapis.com')) return true;
+    return false;
+  };
+
+  const uploaded_image_url =
+    item.image && is_link(item.image)
+      ? item.image
+      : item.image
+      ? await uploadImage(item, item.item_id)
+      : null;
+
+  return db
+    .collection('lists')
+    .doc(item.list_id)
+    .collection('items')
+    .doc(item.item_id)
+    .update({
+      ...item,
+      image: uploaded_image_url,
+      currency_code: user.settings.currency.code,
+    })
+    .then(() => {
+      if (cb) cb(uploaded_image_url);
+    })
+    .catch((error) => {
+      if (err) err(error);
+    });
 };

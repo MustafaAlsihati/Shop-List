@@ -1,17 +1,20 @@
 import React, { useState, useContext } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Divider from '../../components/Divider';
+import { Feather } from '@expo/vector-icons';
 import { Upload } from '../../components/icons';
 import { styles, colors } from '../../constants/Theme';
 import BottomSheet from '../../components/BottomSheet';
 import * as ImagePicker from 'expo-image-picker';
-import { addList } from '../../firebase/index';
+import { editItem } from '../../firebase/index';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const inputInitState = {
-  listName: 0.3,
-  listDesc: 0.3,
+  ItemName: 0.3,
+  ItemDesc: 0.3,
+  ItemLink: 0.3,
+  ItemPrice: 0.3,
 };
 
 const loadingInitState = {
@@ -20,15 +23,10 @@ const loadingInitState = {
   disableSubmit: false,
 };
 
-const AddList = ({ refRBSheet, onRefresh, onClose }) => {
+const EditItem = ({ refRBSheet, onClose, handleInputChange, item }) => {
   const { user } = useContext(AuthContext);
   const [inputOpacity, setInputOpacity] = useState(inputInitState);
   const [loading, setLoading] = useState(loadingInitState);
-
-  const [list, setList] = useState({});
-
-  const handleInputChange = (val, key) =>
-    setList((prev) => ({ ...prev, [key]: val }));
 
   const pickImage = async () => {
     setLoading({ upload: true, disableSubmit: true });
@@ -39,7 +37,7 @@ const AddList = ({ refRBSheet, onRefresh, onClose }) => {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [6, 4],
+        aspect: [6, 6],
         quality: 1,
       });
 
@@ -53,16 +51,16 @@ const AddList = ({ refRBSheet, onRefresh, onClose }) => {
   const handleSubmit = async () => {
     setLoading({ submit: true, disableSubmit: true });
 
-    return addList(
-      list,
+    return editItem(
+      item,
       user,
-      () => {
-        setList({});
+      (uploaded_image_url) => {
+        handleInputChange(uploaded_image_url, 'image');
         onClose();
       },
       (err) => {
-        console.log('ERR at AddList:\n', err);
-        setLoading({ submit: false, disableSubmit: false });
+        console.log('ERR at editItem:\n', err);
+        setLoading({ upload: false, disableSubmit: false });
       }
     );
   };
@@ -71,7 +69,7 @@ const AddList = ({ refRBSheet, onRefresh, onClose }) => {
     <>
       <BottomSheet
         refRBSheet={refRBSheet}
-        height={400}
+        height={465}
         onClose={() => {
           setInputOpacity(inputInitState);
           setLoading(loadingInitState);
@@ -79,56 +77,91 @@ const AddList = ({ refRBSheet, onRefresh, onClose }) => {
       >
         <View style={styles.BSInputFieldContainer}>
           <Input
-            placeholder="List Name"
+            placeholder="Item Name"
             autoCapitalize="sentences"
             autoCorrect={false}
             maxLength={35}
-            value={list.name}
+            value={item.name}
             onChangeText={(text) => handleInputChange(text, 'name')}
             containerStyle={styles.textfieldContainer}
             inputStyle={styles.textfieldInput}
             placeholderTextColor="#A0AEC0"
             inputContainerStyle={{
               ...styles.textfield,
-              backgroundColor: `rgba(255, 255, 255, ${inputOpacity.listName})`,
+              backgroundColor: `rgba(255, 255, 255, ${inputOpacity.ItemName})`,
             }}
-            onFocus={() => setInputOpacity({ listName: 1.0 })}
-            onBlur={() => setInputOpacity({ listName: 0.3 })}
+            onFocus={() => setInputOpacity({ ItemName: 1.0 })}
+            onBlur={() => setInputOpacity({ ItemName: 0.3 })}
           />
           <Input
-            placeholder="List Description"
+            placeholder="Item Short Description (Optional)"
             autoCapitalize="sentences"
             autoCorrect={false}
-            maxLength={150}
-            multiline
-            numberOfLines={3}
-            value={list.description}
+            value={item.description}
             onChangeText={(text) => handleInputChange(text, 'description')}
+            maxLength={80}
             containerStyle={styles.textfieldContainer}
-            inputStyle={{
-              ...styles.textfieldInput,
-              textAlignVertical: 'top',
-            }}
+            inputStyle={styles.textfieldInput}
             placeholderTextColor="#A0AEC0"
             inputContainerStyle={{
               ...styles.textfield,
-              backgroundColor: `rgba(255, 255, 255, ${inputOpacity.listDesc})`,
-              height: 100,
+              backgroundColor: `rgba(255, 255, 255, ${inputOpacity.ItemDesc})`,
             }}
-            onFocus={() => setInputOpacity({ listDesc: 1.0 })}
-            onBlur={() => setInputOpacity({ listDesc: 0.3 })}
+            onFocus={() => setInputOpacity({ ItemDesc: 1.0 })}
+            onBlur={() => setInputOpacity({ ItemDesc: 0.3 })}
+          />
+          <Input
+            placeholder="Item Link"
+            autoCapitalize="none"
+            autoCorrect={false}
+            value={item.link}
+            onChangeText={(text) => handleInputChange(text, 'link')}
+            containerStyle={styles.textfieldContainer}
+            inputStyle={styles.textfieldInput}
+            placeholderTextColor="#A0AEC0"
+            inputContainerStyle={{
+              ...styles.textfield,
+              backgroundColor: `rgba(255, 255, 255, ${inputOpacity.ItemLink})`,
+            }}
+            onFocus={() => setInputOpacity({ ItemLink: 1.0 })}
+            onBlur={() => setInputOpacity({ ItemLink: 0.3 })}
+            rightIcon={
+              <Feather name="link" size={18} color={colors.blueish_grey} />
+            }
+          />
+          <Input
+            placeholder="Item Price"
+            autoCapitalize="none"
+            autoCorrect={false}
+            maxLength={35}
+            value={item.price}
+            onChangeText={(text) => handleInputChange(text, 'price')}
+            containerStyle={styles.textfieldContainer}
+            inputStyle={styles.textfieldInput}
+            placeholderTextColor="#A0AEC0"
+            inputContainerStyle={{
+              ...styles.textfield,
+              backgroundColor: `rgba(255, 255, 255, ${inputOpacity.ItemPrice})`,
+            }}
+            onFocus={() => setInputOpacity({ ItemPrice: 1.0 })}
+            onBlur={() => setInputOpacity({ ItemPrice: 0.3 })}
+            rightIcon={
+              <Text style={styles.priceUnit}>
+                {user.settings.currency.symbol}
+              </Text>
+            }
           />
           <Button
             title={
-              list.image
-                ? list.image.length > 25
-                  ? list.image.substring(0, 11) +
+              item.image
+                ? item.image.length > 25
+                  ? item.image.substring(0, 11) +
                     '...' +
-                    list.image.substring(
-                      list.image.length - 14,
-                      list.image.length
+                    item.image.substring(
+                      item.image.length - 14,
+                      item.image.length
                     )
-                  : list.image
+                  : item.image
                 : 'SELECT PICTURE'
             }
             buttonStyle={styles.uploadBtn}
@@ -162,4 +195,4 @@ const AddList = ({ refRBSheet, onRefresh, onClose }) => {
   );
 };
 
-export default AddList;
+export default EditItem;

@@ -1,16 +1,22 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
+import * as Linking from 'expo-linking';
 import { Button, Image } from 'react-native-elements';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles, colors } from '../../constants/Theme';
-import AddItem from './AddItem';
+import EditItem from './EditItem';
+import Currencies from '../../constants/Currencies';
 
-const Items = ({ navigation, route }) => {
+const Item = ({ navigation, route }) => {
   const { item } = route.params;
-  const headerImage = item.image;
+  const [listItem, setListItem] = useState(item);
+  const headerImage = listItem.image;
   const refRBSheet = useRef();
   const insets = useSafeAreaInsets();
+
+  const handleInputChange = (val, key) =>
+    setListItem((prev) => ({ ...prev, [key]: val }));
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -51,7 +57,7 @@ const Items = ({ navigation, route }) => {
           source={{ uri: headerImage }}
           style={{
             width: 'auto',
-            height: 250,
+            height: 300,
             marginBottom: 15,
             borderRadius: 15,
           }}
@@ -70,7 +76,7 @@ const Items = ({ navigation, route }) => {
               marginBottom: 5,
             }}
           >
-            {item.name}
+            {listItem.name}
           </Text>
           <Text
             style={{
@@ -80,7 +86,7 @@ const Items = ({ navigation, route }) => {
               marginBottom: 15,
             }}
           >
-            {item.description ? item.description : null}
+            {listItem.description ? listItem.description : null}
           </Text>
           <View
             style={{
@@ -96,7 +102,7 @@ const Items = ({ navigation, route }) => {
                 textAlignVertical: 'top',
               }}
             >
-              {`${item.currency} `}
+              {`${Currencies[listItem.currency_code].symbol} `}
             </Text>
             <Text
               style={{
@@ -106,28 +112,34 @@ const Items = ({ navigation, route }) => {
                 textAlignVertical: 'bottom',
               }}
             >
-              {item.price}
+              {listItem.price}
             </Text>
           </View>
 
           <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-            <Text style={styles.itemTileInfo}>
-              Created on {item.created.toDate().toDateString()}
+            <Text style={{ ...styles.itemTileInfo, marginBottom: 10 }}>
+              Created on {listItem.created.toDate().toDateString()}
             </Text>
             <Button
+              onPress={() => Linking.openURL(listItem.link)}
               title="VISIT THIS ITEM WEBSITE"
               type="outline"
-              buttonStyle={{ height: 50, borderRadius: 10, borderWidth: 0 }}
+              buttonStyle={{
+                backgroundColor: colors.green,
+                height: 50,
+                borderRadius: 10,
+                borderWidth: 0,
+              }}
               titleStyle={{
                 fontSize: 15,
-                color: colors.green,
+                color: colors.white,
                 fontFamily: 'Montserrat-Medium',
                 textDecorationLine: 'underline',
               }}
               iconRight
               icon={
                 <View style={{ paddingHorizontal: 5 }}>
-                  <Feather name="link" size={18} color={colors.green} />
+                  <Feather name="link" size={18} color={colors.white} />
                 </View>
               }
             />
@@ -135,9 +147,15 @@ const Items = ({ navigation, route }) => {
         </View>
       </View>
 
-      <AddItem refRBSheet={refRBSheet} />
+      <EditItem
+        {...{ refRBSheet, handleInputChange }}
+        item={listItem}
+        onClose={() => {
+          refRBSheet.current.close();
+        }}
+      />
     </View>
   );
 };
 
-export default Items;
+export default Item;
