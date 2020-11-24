@@ -8,6 +8,7 @@ import Edit from './Edit';
 import Logout from './Logout';
 import Upload from './Upload';
 import Home from './Home';
+import Delete from './Delete';
 
 export {
   Profile,
@@ -20,4 +21,5 @@ export {
   Logout,
   Upload,
   Home,
+  Delete,
 };

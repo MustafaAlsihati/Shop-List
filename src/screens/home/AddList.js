@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Alert } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Divider from '../../components/Divider';
@@ -20,15 +20,22 @@ const loadingInitState = {
   disableSubmit: false,
 };
 
-const AddList = ({ refRBSheet, onRefresh, onClose }) => {
+const AddList = ({ refRBSheet, onRefresh, onClose, editSelectedList }) => {
   const { user } = useContext(AuthContext);
   const [inputOpacity, setInputOpacity] = useState(inputInitState);
   const [loading, setLoading] = useState(loadingInitState);
-
+  const [isEdit, setIsEdit] = useState(false);
   const [list, setList] = useState({});
 
   const handleInputChange = (val, key) =>
     setList((prev) => ({ ...prev, [key]: val }));
+
+  useEffect(() => {
+    if (editSelectedList) {
+      setIsEdit(true);
+      setList(editSelectedList);
+    }
+  }, [editSelectedList]);
 
   const pickImage = async () => {
     setLoading({ upload: true, disableSubmit: true });
@@ -52,6 +59,10 @@ const AddList = ({ refRBSheet, onRefresh, onClose }) => {
 
   const handleSubmit = async () => {
     setLoading({ submit: true, disableSubmit: true });
+
+    if (isEdit) {
+      return;
+    }
 
     return addList(
       list,

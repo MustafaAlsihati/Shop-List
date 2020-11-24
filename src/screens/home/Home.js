@@ -21,15 +21,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ListTile from '../../components/ListTile';
 import AddList from './AddList';
 import Loading from '../../components/Loading';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import DeleteSwipe from '../../components/SwipeActions/DeleteSwipe';
+import EditSwipe from '../../components/SwipeActions/EditSwipe';
 
 const Home = ({ navigation }) => {
   const { user } = useContext(AuthContext);
-  const [username, setUsername] = useState('');
-  const [lists, setLists] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const refRBSheet = useRef();
   const insets = useSafeAreaInsets();
 
+  const [username, setUsername] = useState('');
+  const [lists, setLists] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [editSelectedList, setEditSelectedList] = useState({});
   const handleTileClick = (item) => navigation.navigate('List', { item });
 
   useLayoutEffect(() => {
@@ -89,14 +93,34 @@ const Home = ({ navigation }) => {
         data={lists}
         keyExtractor={(list) => list.list_id}
         renderItem={({ item }) => {
+          const refSwipe = React.createRef();
+
           return (
-            <TouchableOpacity
-              style={styles.fullW}
-              onPress={() => handleTileClick(item)}
-              activeOpacity={0.5}
+            <Swipeable
+              ref={refSwipe}
+              key={item.list_id}
+              renderLeftActions={(progress, dragX) =>
+                EditSwipe(progress, dragX, () => {
+                  setEditSelectedList(item);
+                  refSwipe.current.close();
+                  refRBSheet.current.open();
+                })
+              }
+              renderRightActions={(progress, dragX) =>
+                DeleteSwipe(progress, dragX, () => {
+                  console.log('Deleting this item:\n', item);
+                  refSwipe.current.close();
+                })
+              }
             >
-              <ListTile key={item.list_id} item={item} />
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.fullW}
+                onPress={() => handleTileClick(item)}
+                activeOpacity={0.5}
+              >
+                <ListTile key={item.list_id} item={item} />
+              </TouchableOpacity>
+            </Swipeable>
           );
         }}
         refreshControl={
@@ -121,7 +145,7 @@ const Home = ({ navigation }) => {
       />
 
       <AddList
-        {...{ refRBSheet, onRefresh }}
+        {...{ refRBSheet, onRefresh, editSelectedList }}
         onClose={() => {
           refRBSheet.current.close();
           onRefresh();
