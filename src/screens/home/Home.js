@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { styles, colors } from '../../constants/Theme';
-import { getJoinedList } from '../../firebase/index';
+import { getJoinedList, deleteList } from '../../firebase';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ListTile from '../../components/ListTile';
@@ -108,8 +108,12 @@ const Home = ({ navigation }) => {
               }
               renderRightActions={(progress, dragX) =>
                 DeleteSwipe(progress, dragX, () => {
-                  console.log('Deleting this item:\n', item);
                   refSwipe.current.close();
+                  return deleteList(
+                    item.list_id,
+                    () => onRefresh(),
+                    (err) => console.log('ERR @ deleteList (Home.js):\n', err)
+                  );
                 })
               }
             >

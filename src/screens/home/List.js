@@ -21,7 +21,9 @@ import AddItem from './AddItem';
 import Constants from 'expo-constants';
 import Loading from '../../components/Loading';
 import { useHeaderHeight } from '@react-navigation/stack';
-import { getListItems } from '../../firebase/index';
+import { getListItems, deleteItem } from '../../firebase';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import DeleteSwipe from '../../components/SwipeActions/DeleteSwipe';
 
 const List = ({ navigation, route }) => {
   const { item } = route.params;
@@ -134,16 +136,37 @@ const List = ({ navigation, route }) => {
           {isLoading ? (
             <Loading size={8} />
           ) : listItems && listItems.length > 0 ? (
-            listItems.map((item) => (
-              <TouchableOpacity
-                style={styles.fullW}
-                onPress={() => handleItemClick(item)}
-                activeOpacity={0.5}
-                key={item.item_id}
-              >
-                <ItemTile key={item.item_id} item={item} />
-              </TouchableOpacity>
-            ))
+            listItems.map((item) => {
+              const refSwipe = React.createRef();
+
+              return (
+                <Swipeable
+                  ref={refSwipe}
+                  key={item.item_id}
+                  renderRightActions={(progress, dragX) =>
+                    DeleteSwipe(progress, dragX, () => {
+                      refSwipe.current.close();
+                      return deleteItem(
+                        item.item_id,
+                        item.list_id,
+                        () => onRefresh(),
+                        (err) =>
+                          console.log('ERR @ deleteItem (List.js):\n', err)
+                      );
+                    })
+                  }
+                >
+                  <TouchableOpacity
+                    style={styles.fullW}
+                    onPress={() => handleItemClick(item)}
+                    activeOpacity={0.5}
+                    key={item.item_id}
+                  >
+                    <ItemTile key={item.item_id} item={item} />
+                  </TouchableOpacity>
+                </Swipeable>
+              );
+            })
           ) : (
             <Text style={styles.emptyListText}>List is empty</Text>
           )}

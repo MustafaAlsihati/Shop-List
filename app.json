@@ -23,7 +23,8 @@
       "favicon": "./assets/favicon.png"
     },
     "android": {
-      "userInterfaceStyle": "dark"
+      "userInterfaceStyle": "dark",
+      "useNextNotificationsApi": true
     },
     "androidNavigationBar": {
       "barStyle": "light-content",

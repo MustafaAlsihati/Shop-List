@@ -5,6 +5,13 @@ import 'firebase/storage';
 
 /* ################################### Firebase Configs ###################################### */
 
+const is_link = (str) => {
+  if (str.startsWith('https://firebasestorage.googleapis.com')) return true;
+  return false;
+};
+
+/* ############################### Firebase Utils Functions ################################## */
+
 var firebaseConfig = {
   apiKey: 'AIzaSyAcTBE3HU_X9P5dfvxjw1m06FpzJu58S9s',
   authDomain: 'react-js-test-da73a.firebaseapp.com',
@@ -53,6 +60,41 @@ export const signOut = async () => {
 };
 
 /* ##################################### Firestore ######################################### */
+
+export const getUserPushKey = async (uid, err) => {
+  let expo_push_token = '';
+  const snapshot = await db.collection('users').doc(uid).get();
+
+  snapshot
+    .then((doc) => {
+      if (doc.exists && doc.data().expo_push_token) {
+        expo_push_token = doc.data().expo_push_token;
+      }
+    })
+    .catch((error) => {
+      console.log('ERR @ getUserPushKey (firebase/index.js)\n', error.message);
+      if (err) err(error);
+    });
+
+  return expo_push_token;
+};
+
+export const sendNotification = async (uid, content, cb, err) => {
+  const ref = db.collection('users').doc(uid).collection('notifications');
+  const notification_id = ref.doc().id;
+
+  console.log('content: ', { ...content, notification_id });
+
+  return ref
+    .doc(notification_id)
+    .set({ ...content, notification_id })
+    .then(() => {
+      if (cb) cb();
+    })
+    .catch((error) => {
+      if (err) err(error);
+    });
+};
 
 export const getJoinedList = async (uid) => {
   const snapshot = await db
@@ -136,6 +178,7 @@ export const addList = async (list, user, cb, err) => {
         {
           id: user.uid,
           name: user.username,
+          status: 'member',
         },
       ],
     })
@@ -194,12 +237,30 @@ export const addItem = async (item, list_id, user, cb, err) => {
     });
 };
 
-export const editItem = async (item, user, cb, err) => {
-  const is_link = (str) => {
-    if (str.startsWith('https://firebasestorage.googleapis.com')) return true;
-    return false;
-  };
+export const editList = async (list, cb, err) => {
+  const uploaded_image_url =
+    list.image && is_link(list.image)
+      ? list.image
+      : list.image
+      ? await uploadImage(list, list.list_id)
+      : null;
 
+  return db
+    .collection('lists')
+    .doc(list.list_id)
+    .update({
+      ...list,
+      image: uploaded_image_url,
+    })
+    .then(() => {
+      if (cb) cb();
+    })
+    .catch((error) => {
+      if (err) err(error);
+    });
+};
+
+export const editItem = async (item, user, cb, err) => {
   const uploaded_image_url =
     item.image && is_link(item.image)
       ? item.image
@@ -221,6 +282,34 @@ export const editItem = async (item, user, cb, err) => {
       if (cb) cb(uploaded_image_url);
     })
     .catch((error) => {
+      if (err) err(error);
+    });
+};
+
+export const deleteList = async (list_id, cb, err) => {
+  return db
+    .collection('lists')
+    .doc(list_id)
+    .delete()
+    .then(() => {
+      if (cb) cb();
+    })
+    .catch(function (error) {
+      if (err) err(error);
+    });
+};
+
+export const deleteItem = async (item_id, list_id, cb, err) => {
+  return db
+    .collection('lists')
+    .doc(list_id)
+    .collection('items')
+    .doc(item_id)
+    .delete()
+    .then(() => {
+      if (cb) cb();
+    })
+    .catch(function (error) {
       if (err) err(error);
     });
 };

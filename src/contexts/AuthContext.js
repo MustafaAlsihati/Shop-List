@@ -1,4 +1,5 @@
 import React, { useState, useEffect, createContext } from 'react';
+import { isObjEmpty } from '../js/utils';
 import { db, auth } from '../firebase';
 
 export const AuthContext = createContext({
@@ -7,20 +8,18 @@ export const AuthContext = createContext({
 });
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = () =>
       auth.onAuthStateChanged((user) => {
         if (user) {
-          const uid = user.uid;
           db.collection('users')
-            .doc(uid)
+            .doc(user.uid)
             .onSnapshot(
               (doc) => {
-                const userData = { ...doc.data(), uid };
-                setUser(userData);
+                setUser({ ...doc.data(), uid: user.uid });
                 setLoading(false);
               },
               (err) => {
@@ -28,6 +27,7 @@ export const AuthProvider = ({ children }) => {
               }
             );
         } else {
+          setUser(null);
           setTimeout(() => setLoading(false), 1500);
         }
       });

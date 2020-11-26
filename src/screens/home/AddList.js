@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import _ from 'lodash';
 import { View, Alert } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Divider from '../../components/Divider';
@@ -6,7 +7,7 @@ import { Upload } from '../../components/icons';
 import { styles, colors } from '../../constants/Theme';
 import BottomSheet from '../../components/BottomSheet';
 import * as ImagePicker from 'expo-image-picker';
-import { addList } from '../../firebase/index';
+import { addList, editList } from '../../firebase';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const inputInitState = {
@@ -31,7 +32,7 @@ const AddList = ({ refRBSheet, onRefresh, onClose, editSelectedList }) => {
     setList((prev) => ({ ...prev, [key]: val }));
 
   useEffect(() => {
-    if (editSelectedList) {
+    if (!_.isEmpty(editSelectedList)) {
       setIsEdit(true);
       setList(editSelectedList);
     }
@@ -61,7 +62,14 @@ const AddList = ({ refRBSheet, onRefresh, onClose, editSelectedList }) => {
     setLoading({ submit: true, disableSubmit: true });
 
     if (isEdit) {
-      return;
+      return editList(
+        list,
+        () => {
+          setList({});
+          onClose();
+        },
+        (err) => console.log('ERR @ editList (AddList.js)\n', err)
+      );
     }
 
     return addList(
@@ -72,7 +80,7 @@ const AddList = ({ refRBSheet, onRefresh, onClose, editSelectedList }) => {
         onClose();
       },
       (err) => {
-        console.log('ERR at AddList:\n', err);
+        console.log('ERR at addList (AddList.js):\n', err);
         setLoading({ submit: false, disableSubmit: false });
       }
     );
