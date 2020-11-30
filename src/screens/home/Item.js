@@ -15,6 +15,10 @@ const Item = ({ navigation, route }) => {
   const refRBSheet = useRef();
   const insets = useSafeAreaInsets();
 
+  let date = listItem.created.toDate();
+  date =
+    date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+
   const handleInputChange = (val, key) =>
     setListItem((prev) => ({ ...prev, [key]: val }));
 
@@ -118,7 +122,7 @@ const Item = ({ navigation, route }) => {
 
           <View style={{ flex: 1, justifyContent: 'flex-end' }}>
             <Text style={{ ...styles.itemTileInfo, marginBottom: 10 }}>
-              Created on {listItem.created.toDate().toDateString()}
+              Created on {date}
             </Text>
             <Button
               onPress={() => Linking.openURL(listItem.link)}

@@ -4,6 +4,10 @@ import { styles } from '../constants/Theme';
 import Currencies from '../constants/Currencies';
 
 const ItemTile = ({ item }) => {
+  let date = item.created.toDate();
+  date =
+    date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+
   return (
     <View style={styles.itemTile}>
       <Text style={{ ...styles.tileMembers, marginTop: 0, textAlign: 'left' }}>
@@ -14,9 +18,7 @@ const ItemTile = ({ item }) => {
         <Text style={styles.itemTileInfo}>
           {item.price} {Currencies[item.currency_code].symbol}
         </Text>
-        <Text style={styles.itemTileInfo}>
-          {item.created.toDate().toDateString()}
-        </Text>
+        <Text style={styles.itemTileInfo}>{date}</Text>
       </View>
     </View>
   );

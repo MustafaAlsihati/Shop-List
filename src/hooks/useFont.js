@@ -9,5 +9,5 @@ export function useFont() {
     'Montserrat-Thin': require('../../assets/fonts/Montserrat-Thin.ttf'),
   });
 
-  return [fontsLoaded];
+  return fontsLoaded;
 }

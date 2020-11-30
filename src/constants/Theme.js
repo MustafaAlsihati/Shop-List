@@ -314,6 +314,7 @@ export const styles = StyleSheet.create({
   menuItemText: {
     fontFamily: 'Montserrat-Regular',
     color: colors.white,
+    marginHorizontal: 10,
   },
   emptyListText: {
     width: '100%',
@@ -330,6 +331,12 @@ export const styles = StyleSheet.create({
     borderRadius: 5 / 2,
     alignSelf: 'center',
     marginTop: 3,
+  },
+  menuItemsWithIcon: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 

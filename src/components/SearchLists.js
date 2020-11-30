@@ -2,7 +2,14 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { styles } from '../constants/Theme';
 
-const SearchLists = () => {
+const SearchLists = ({ item }) => {
+  const authorName = item.users.map((user) =>
+    user.id === item.author ? user.name : null
+  );
+  let date = item.created.toDate();
+  date =
+    date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+
   return (
     <View style={{ ...styles.itemTile, ...styles.searchListTile }}>
       <View
@@ -11,10 +18,7 @@ const SearchLists = () => {
           justifyContent: 'center',
         }}
       >
-        <Text style={styles.tileTitle}>
-          {/* Title */}
-          Amazon
-        </Text>
+        <Text style={styles.tileTitle}>{item.name}</Text>
         <Text
           style={{
             ...styles.tileMembers,
@@ -22,8 +26,8 @@ const SearchLists = () => {
             textAlign: 'left',
           }}
         >
-          {/* Author name + others*/}
-          Mustafa + 1 other(s)
+          {authorName}
+          {item.users.length > 1 ? `+ ${item.users.length - 1} other(s)` : null}
         </Text>
       </View>
       <View
@@ -33,14 +37,10 @@ const SearchLists = () => {
           alignItems: 'center',
         }}
       >
-        <Text style={styles.itemTileInfo}>
-          {/* Date */}
-          25/09/2020
-        </Text>
-        <Text style={styles.itemTileInfo}>
-          {/* Number of Items */}
-          15 Item(s)
-        </Text>
+        <Text style={styles.itemTileInfo}>{date}</Text>
+        {/* <Text style={styles.itemTileInfo}> */}
+        {/* Number of Items */}
+        {/* </Text> */}
       </View>
     </View>
   );

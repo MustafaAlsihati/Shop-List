@@ -61,24 +61,6 @@ export const signOut = async () => {
 
 /* ##################################### Firestore ######################################### */
 
-export const getUserPushKey = async (uid, err) => {
-  let expo_push_token = '';
-  const snapshot = await db.collection('users').doc(uid).get();
-
-  snapshot
-    .then((doc) => {
-      if (doc.exists && doc.data().expo_push_token) {
-        expo_push_token = doc.data().expo_push_token;
-      }
-    })
-    .catch((error) => {
-      console.log('ERR @ getUserPushKey (firebase/index.js)\n', error.message);
-      if (err) err(error);
-    });
-
-  return expo_push_token;
-};
-
 export const sendNotification = async (uid, content, cb, err) => {
   const ref = db.collection('users').doc(uid).collection('notifications');
   const notification_id = ref.doc().id;
@@ -137,11 +119,11 @@ export const getListItems = async (list_id) => {
   return snapshot.docs.map((doc) => doc.data());
 };
 
-const uploadImage = async (data, id) => {
-  const response = await fetch(data.image);
+const uploadImage = async (image, name, id) => {
+  const response = await fetch(image);
   const blob = await response.blob();
   const uploadTask = storage
-    .ref(`images/${data.name.replace(/\s/g, '')}-${id}`)
+    .ref(`images/${name.replace(/\s/g, '')}-${id}`)
     .put(blob);
 
   return new Promise((resolve, reject) => {
@@ -152,7 +134,7 @@ const uploadImage = async (data, id) => {
       async () => {
         const image_url = await storage
           .ref('images')
-          .child(`${data.name.replace(/\s/g, '')}-${id}`)
+          .child(`${name.replace(/\s/g, '')}-${id}`)
           .getDownloadURL();
 
         resolve(image_url);
@@ -164,13 +146,14 @@ const uploadImage = async (data, id) => {
 export const addList = async (list, user, cb, err) => {
   const list_id = db.collection('lists').doc().id;
   const uploaded_image_url = list.image
-    ? await uploadImage(list, list_id)
+    ? await uploadImage(list.image, list.name, list_id)
     : null;
 
   const new_list = JSON.parse(
     JSON.stringify({
       ...list,
       list_id,
+      search_term: list.name.toLowerCase(),
       image: uploaded_image_url,
       author: user.uid,
       userIds: [user.uid],
@@ -203,7 +186,7 @@ export const addItem = async (item, list_id, user, cb, err) => {
   const item_id = db.collection('lists').doc(list_id).collection('items').doc()
     .id;
   const uploaded_image_url = item.image
-    ? await uploadImage(item, item_id)
+    ? await uploadImage(item.image, item.name, item_id)
     : null;
 
   const new_item = JSON.parse(
@@ -211,6 +194,7 @@ export const addItem = async (item, list_id, user, cb, err) => {
       ...item,
       item_id,
       list_id,
+      search_term: item.name.toLowerCase(),
       image: uploaded_image_url,
       author: {
         id: user.uid,
@@ -242,7 +226,7 @@ export const editList = async (list, cb, err) => {
     list.image && is_link(list.image)
       ? list.image
       : list.image
-      ? await uploadImage(list, list.list_id)
+      ? await uploadImage(list.image, list.name, list_id)
       : null;
 
   return db
@@ -250,6 +234,7 @@ export const editList = async (list, cb, err) => {
     .doc(list.list_id)
     .update({
       ...list,
+      search_term: list.name.toLowerCase(),
       image: uploaded_image_url,
     })
     .then(() => {
@@ -265,7 +250,7 @@ export const editItem = async (item, user, cb, err) => {
     item.image && is_link(item.image)
       ? item.image
       : item.image
-      ? await uploadImage(item, item.item_id)
+      ? await uploadImage(item.image, item.name, item_id)
       : null;
 
   return db
@@ -275,6 +260,7 @@ export const editItem = async (item, user, cb, err) => {
     .doc(item.item_id)
     .update({
       ...item,
+      search_term: item.name.toLowerCase(),
       image: uploaded_image_url,
       currency_code: user.settings.currency.code,
     })
@@ -312,4 +298,37 @@ export const deleteItem = async (item_id, list_id, cb, err) => {
     .catch(function (error) {
       if (err) err(error);
     });
+};
+
+export const updateProfilePic = async (user, image, cb, err) => {
+  const uploaded_image_url = image
+    ? await uploadImage(image, user.username, user.uid)
+    : null;
+
+  return db
+    .collection('users')
+    .doc(user.uid)
+    .update({
+      image: uploaded_image_url,
+    })
+    .then(() => {
+      if (cb) cb();
+    })
+    .catch((error) => {
+      console.log('ERR @ updateProfilePic\n', error.message);
+      if (err) err(error);
+    });
+};
+
+export const searchLists = async (term) => {
+  if (term === '') return [];
+
+  const snapshot = await db
+    .collection('lists')
+    .orderBy('search_term')
+    .startAt(term)
+    .endAt(term + '\uf8ff')
+    .get();
+
+  return snapshot.docs.map((doc) => doc.data());
 };

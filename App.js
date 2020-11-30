@@ -31,7 +31,7 @@ const App = () => {
 };
 
 export default () => {
-  let [fontsLoaded] = useFont();
+  let fontsLoaded = useFont();
 
   return (
     <AppearanceProvider>

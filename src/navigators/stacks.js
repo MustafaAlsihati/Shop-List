@@ -9,7 +9,7 @@ import Search from '../screens/search/Search';
 import Account from '../screens/account/Account';
 import SignIn from '../screens/auth/Signin';
 import SignUp from '../screens/auth/SignUp';
-import Settings from '../screens/settings/Settings';
+import Settings from '../screens/account/settings/Settings';
 import Notifications from '../screens/notifications/Notifications';
 
 const Stack = createStackNavigator();

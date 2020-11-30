@@ -68,9 +68,17 @@ const registerForPushNotificationsAsync = async () => {
       });
     }
 
-    await db.collection('users').doc(uid).update({
-      expo_push_token: token,
-    });
+    if (uid) {
+      await db
+        .collection('users')
+        .doc(uid)
+        .update({
+          expo_push_token: token,
+        })
+        .catch((err) =>
+          console.log('ERR @ registerForPushNotificationsAsync\n', err.message)
+        );
+    }
 
     return token;
   } catch (error) {

@@ -3,17 +3,52 @@ import { View, Text } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import { colors, styles } from '../../constants/Theme';
 import UserInfoTile from '../../components/UserInfoTile';
+import * as ImagePicker from 'expo-image-picker';
+import { updateProfilePic } from '../../firebase';
 
 const AccountHeader = ({ user, userLists, userItems, isLoading }) => {
+  const image = user.image ? { uri: user.image } : null;
+
+  const pickImage = async () => {
+    let image_url = null;
+    const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Sorry, we need camera roll permissions to make this work!');
+    } else {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 0.4,
+      });
+
+      if (result.cancelled) {
+        return;
+      }
+      image_url = result.uri;
+
+      return updateProfilePic(
+        user,
+        image_url,
+        () => {},
+        (err) => {
+          console.log('ERR @ pickImage (AccountHeader.js)\n', err.message);
+        }
+      );
+    }
+  };
+
   return (
     <>
       <View style={{ ...styles.column, alignItems: 'center' }}>
         <Avatar
           rounded
-          title="ME"
+          title={
+            user.username ? user.username.substring(0, 2).toUpperCase() : ''
+          }
           size="large"
-          // source={{ uri: '' }}
-          onPress={() => console.log('Avatar Clicked!')}
+          source={image}
+          onPress={pickImage}
           activeOpacity={0.7}
           containerStyle={{
             borderWidth: 1,

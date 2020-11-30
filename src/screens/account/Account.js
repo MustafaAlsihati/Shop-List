@@ -1,4 +1,5 @@
 import React, {
+  useRef,
   useState,
   useEffect,
   useContext,
@@ -13,16 +14,21 @@ import {
   Keyboard,
   Alert,
   RefreshControl,
+  Text,
 } from 'react-native';
 import Divider from '../../components/Divider';
-import { Logout } from '../../components/icons';
+import { Feather } from '@expo/vector-icons';
+import { Settings, Logout } from '../../components/icons';
 import { colors, styles } from '../../constants/Theme';
 import AccountHeader from './AccountHeader';
 import AccountContent from './AccountContent';
 import { signOut, getMyLists, getMyItems } from '../../firebase/index';
 import { AuthContext } from '../../contexts/AuthContext';
+import MenuPopup from '../../components/MenuPopup';
+import { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 const Account = ({ navigation }) => {
+  const refMenu = useRef();
   const { user } = useContext(AuthContext);
   const [userLists, setUserLists] = useState([]);
   const [userItems, setUserItems] = useState(0);
@@ -31,11 +37,41 @@ const Account = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity activeOpacity={0.7} onPress={signOutClickHandle}>
-          <View style={{ paddingHorizontal: 15 }}>
-            <Logout size={24} color={colors.blueish_grey} />
-          </View>
-        </TouchableOpacity>
+        <MenuPopup
+          {...{ refMenu }}
+          menuItems={
+            <>
+              <MenuItem onPress={() => {}}>
+                <View style={styles.menuItemsWithIcon}>
+                  <Settings size={22} color={colors.blueish_grey} />
+                  <Text style={styles.menuItemText}>Settings</Text>
+                </View>
+              </MenuItem>
+              <View style={{ marginHorizontal: 5 }}>
+                <MenuDivider color={colors.blueish_grey} />
+              </View>
+              <MenuItem onPress={signOutClickHandle}>
+                <View style={styles.menuItemsWithIcon}>
+                  <Logout size={22} color={colors.blueish_grey} />
+                  <Text style={styles.menuItemText}>Sign Out</Text>
+                </View>
+              </MenuItem>
+            </>
+          }
+        >
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => refMenu.current.show()}
+          >
+            <View style={{ paddingHorizontal: 15 }}>
+              <Feather
+                name="more-vertical"
+                size={24}
+                color={colors.blueish_grey}
+              />
+            </View>
+          </TouchableOpacity>
+        </MenuPopup>
       ),
     });
   }, [navigation]);
