@@ -34,6 +34,11 @@ const Account = ({ navigation }) => {
   const [userItems, setUserItems] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
+  const openSettings = () => {
+    refMenu.current.hide();
+    navigation.navigate('Settings');
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -41,7 +46,7 @@ const Account = ({ navigation }) => {
           {...{ refMenu }}
           menuItems={
             <>
-              <MenuItem onPress={() => {}}>
+              <MenuItem onPress={openSettings}>
                 <View style={styles.menuItemsWithIcon}>
                   <Settings size={22} color={colors.blueish_grey} />
                   <Text style={styles.menuItemText}>Settings</Text>

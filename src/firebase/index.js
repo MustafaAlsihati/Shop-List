@@ -42,13 +42,27 @@ export const signUpWithEmailAndPassword = async (user) => {
     .createUserWithEmailAndPassword(user.email, user.password)
     .then((result) => {
       const uid = result.user.uid;
-      return db.collection('users').doc(uid).set({
-        username: user.username,
-        email: user.email,
-        uid,
-        created: firebase.firestore.FieldValue.serverTimestamp(),
-        image: null,
-      });
+      return db
+        .collection('users')
+        .doc(uid)
+        .set({
+          username: user.username,
+          email: user.email,
+          uid,
+          created: firebase.firestore.FieldValue.serverTimestamp(),
+          image: null,
+          settings: {
+            currency: {
+              symbol: '$',
+              name: 'US Dollar',
+              symbol_native: '$',
+              decimal_digits: 2,
+              rounding: 0,
+              code: 'USD',
+              name_plural: 'US dollars',
+            },
+          },
+        });
     })
     .catch(function (error) {
       throw Error(error.message);
@@ -60,6 +74,19 @@ export const signOut = async () => {
 };
 
 /* ##################################### Firestore ######################################### */
+
+export const updateSettings = async (uid, obj, cb, err) => {
+  return db
+    .collection('users')
+    .doc(uid)
+    .update({ settings: obj })
+    .then(() => {
+      if (cb) cb();
+    })
+    .catch((error) => {
+      if (err) err(error);
+    });
+};
 
 export const sendNotification = async (uid, content, cb, err) => {
   const ref = db.collection('users').doc(uid).collection('notifications');

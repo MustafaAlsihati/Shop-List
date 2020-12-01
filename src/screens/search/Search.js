@@ -65,6 +65,7 @@ const Search = ({ navigation }) => {
             placeholderTextColor={colors.blueish_grey}
             inputContainerStyle={{
               ...styles.textfield,
+              height: 50,
               backgroundColor: `rgba(255, 255, 255, ${inputOpacity.searchList})`,
             }}
             onFocus={() => setInputOpacity({ searchList: 1.0 })}

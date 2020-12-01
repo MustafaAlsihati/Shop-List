@@ -4,8 +4,8 @@ import { styles } from '../../constants/Theme';
 
 const Notifications = () => {
   return (
-    <View>
-      <Text style={styles.tileTitle}>Notifications</Text>
+    <View style={styles.View}>
+      <Text style={styles.tileTitle}>Notifications Here</Text>
     </View>
   );
 };

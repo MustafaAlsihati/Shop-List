@@ -41,6 +41,20 @@ export const styles = StyleSheet.create({
   column: {
     flexDirection: 'column',
   },
+  centerV: {
+    alignItems: 'center',
+    textAlignVertical: 'center',
+  },
+  centerH: {
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+  centerVH: {
+    justifyContent: 'center',
+    textAlign: 'center',
+    alignItems: 'center',
+    textAlignVertical: 'center',
+  },
   divider: {
     width: '100%',
     height: 1,
@@ -337,6 +351,26 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  settingsIcon: {
+    marginRight: 16,
+    alignSelf: 'center',
+  },
+  settingsListTitleText: {
+    fontFamily: 'Montserrat-Bold',
+    color: colors.grayish_white,
+    fontSize: 16,
+  },
+  settingsListDescriptionText: {
+    fontFamily: 'Montserrat-Regular',
+    color: colors.textfieldInput,
+    fontSize: 12,
+  },
+  settingText: {
+    fontFamily: 'Montserrat-Medium',
+    color: colors.green,
+    fontSize: 14,
+    width: '15%',
   },
 });
 
