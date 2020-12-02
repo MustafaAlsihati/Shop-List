@@ -43,6 +43,7 @@ export const styles = StyleSheet.create({
   },
   centerV: {
     alignItems: 'center',
+    alignSelf: 'center',
     textAlignVertical: 'center',
   },
   centerH: {
@@ -53,6 +54,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     textAlign: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     textAlignVertical: 'center',
   },
   divider: {

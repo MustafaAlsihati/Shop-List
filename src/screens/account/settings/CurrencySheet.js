@@ -9,6 +9,7 @@ import { filterCurrencies } from '../../../js/utils';
 import { styles, colors } from '../../../constants/Theme';
 import BottomSheet from '../../../components/BottomSheet';
 import Currencies from '../../../constants/Currencies';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const inputInitState = {
   listName: 0.3,
@@ -22,6 +23,7 @@ const CurrencySheet = ({
   onClose,
   handleInputChange,
 }) => {
+  const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
   const [inputOpacity, setInputOpacity] = useState(inputInitState);
   let currencies = Object.keys(Currencies).map((i) => Currencies[i]);
@@ -113,7 +115,12 @@ const CurrencySheet = ({
 
         <Divider />
 
-        <View style={styles.BSInputFieldContainer}>
+        <View
+          style={[
+            styles.BSInputFieldContainer,
+            { marginBottom: insets.bottom },
+          ]}
+        >
           <Button
             title="SAVE"
             buttonStyle={styles.btn}

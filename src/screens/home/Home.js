@@ -94,27 +94,33 @@ const Home = ({ navigation }) => {
         keyExtractor={(list) => list.list_id}
         renderItem={({ item }) => {
           const refSwipe = React.createRef();
+          const is_author = item.author === user.uid;
 
           return (
             <Swipeable
               ref={refSwipe}
               key={item.list_id}
               renderLeftActions={(progress, dragX) =>
-                EditSwipe(progress, dragX, () => {
-                  setEditSelectedList(item);
-                  refSwipe.current.close();
-                  refRBSheet.current.open();
-                })
+                is_author
+                  ? EditSwipe(progress, dragX, () => {
+                      setEditSelectedList(item);
+                      refSwipe.current.close();
+                      refRBSheet.current.open();
+                    })
+                  : null
               }
               renderRightActions={(progress, dragX) =>
-                DeleteSwipe(progress, dragX, () => {
-                  refSwipe.current.close();
-                  return deleteList(
-                    item.list_id,
-                    () => onRefresh(),
-                    (err) => console.log('ERR @ deleteList (Home.js):\n', err)
-                  );
-                })
+                is_author
+                  ? DeleteSwipe(progress, dragX, () => {
+                      refSwipe.current.close();
+                      return deleteList(
+                        item.list_id,
+                        () => onRefresh(),
+                        (err) =>
+                          console.log('ERR @ deleteList (Home.js):\n', err)
+                      );
+                    })
+                  : null
               }
             >
               <TouchableOpacity

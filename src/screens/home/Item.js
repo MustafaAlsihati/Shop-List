@@ -1,14 +1,16 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useContext, useLayoutEffect } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import * as Linking from 'expo-linking';
 import { Button, Image } from 'react-native-elements';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AuthContext } from '../../contexts/AuthContext';
 import { styles, colors } from '../../constants/Theme';
 import EditItem from './EditItem';
 import Currencies from '../../constants/Currencies';
 
 const Item = ({ navigation, route }) => {
+  const { user } = useContext(AuthContext);
   const { item } = route.params;
   const [listItem, setListItem] = useState(item);
   const headerImage = listItem.image;
@@ -23,23 +25,26 @@ const Item = ({ navigation, route }) => {
     setListItem((prev) => ({ ...prev, [key]: val }));
 
   useLayoutEffect(() => {
+    const is_author = listItem.author.id === user.uid;
+
     navigation.setOptions({
       headerTitle: ' ',
-      headerRight: () => (
-        <Button
-          titleStyle={{
-            ...styles.btnTitle,
-            color: colors.green,
-            fontSize: 14,
-            paddingHorizontal: 5,
-          }}
-          title="Edit Item"
-          type="clear"
-          onPress={() => refRBSheet.current.open()}
-        />
-      ),
+      headerRight: () =>
+        is_author ? (
+          <Button
+            titleStyle={{
+              ...styles.btnTitle,
+              color: colors.green,
+              fontSize: 14,
+              paddingHorizontal: 5,
+            }}
+            title="Edit Item"
+            type="clear"
+            onPress={() => refRBSheet.current.open()}
+          />
+        ) : null,
     });
-  }, [navigation]);
+  }, [navigation, listItem]);
 
   return (
     <View

@@ -31,6 +31,7 @@ const Search = ({ navigation }) => {
   };
 
   const handleTileClick = (item) => {
+    resetValues();
     navigation.navigate('List', { item });
   };
 

@@ -359,3 +359,16 @@ export const searchLists = async (term) => {
 
   return snapshot.docs.map((doc) => doc.data());
 };
+
+export const joinList = async (user, list_id) => {
+  return db
+    .collection('lists')
+    .doc(list_id)
+    .update({
+      userIds: firebase.firestore.FieldValue.arrayUnion(user.uid),
+      users: firebase.firestore.FieldValue.arrayUnion({
+        id: user.uid,
+        name: user.username,
+      }),
+    });
+};

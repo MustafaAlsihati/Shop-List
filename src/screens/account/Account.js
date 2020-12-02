@@ -15,6 +15,7 @@ import {
   Alert,
   RefreshControl,
   Text,
+  Platform,
 } from 'react-native';
 import Divider from '../../components/Divider';
 import { Feather } from '@expo/vector-icons';
@@ -47,7 +48,12 @@ const Account = ({ navigation }) => {
           menuItems={
             <>
               <MenuItem onPress={openSettings}>
-                <View style={styles.menuItemsWithIcon}>
+                <View
+                  style={[
+                    styles.menuItemsWithIcon,
+                    Platform.OS === 'ios' ? { paddingHorizontal: 15 } : {},
+                  ]}
+                >
                   <Settings size={22} color={colors.blueish_grey} />
                   <Text style={styles.menuItemText}>Settings</Text>
                 </View>
@@ -56,7 +62,12 @@ const Account = ({ navigation }) => {
                 <MenuDivider color={colors.blueish_grey} />
               </View>
               <MenuItem onPress={signOutClickHandle}>
-                <View style={styles.menuItemsWithIcon}>
+                <View
+                  style={[
+                    styles.menuItemsWithIcon,
+                    Platform.OS === 'ios' ? { paddingHorizontal: 15 } : {},
+                  ]}
+                >
                   <Logout size={22} color={colors.blueish_grey} />
                   <Text style={styles.menuItemText}>Sign Out</Text>
                 </View>
@@ -153,9 +164,11 @@ const Account = ({ navigation }) => {
           />
         }
       >
-        <AccountHeader {...{ user, userLists, userItems, isLoading }} />
+        <AccountHeader
+          {...{ navigation, user, userLists, userItems, isLoading }}
+        />
         <Divider />
-        <AccountContent {...{ user, userLists, isLoading }} />
+        <AccountContent {...{ navigation, user, userLists, isLoading }} />
       </ScrollView>
     </TouchableWithoutFeedback>
   );

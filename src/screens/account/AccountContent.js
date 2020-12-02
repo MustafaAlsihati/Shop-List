@@ -4,14 +4,16 @@ import { styles } from '../../constants/Theme';
 import OwnedListTile from '../../components/OwnedListTile';
 import Loading from '../../components/Loading';
 
-const AccountContent = ({ userLists, isLoading }) => {
+const AccountContent = ({ navigation, user, userLists, isLoading }) => {
+  const handleListClick = (item) => navigation.navigate('List', { item });
+
   return (
     <>
       <Text style={styles.ownedLists}>Owned Lists</Text>
       <View style={styles.row}>
         {isLoading ? (
           <Loading size={8} containerStyle={{ paddingVertical: 10 }} />
-        ) : userLists && userLists.length > 0 ? (
+        ) : (
           <FlatList
             horizontal={true}
             showsHorizontalScrollIndicator={false}
@@ -19,14 +21,18 @@ const AccountContent = ({ userLists, isLoading }) => {
             keyExtractor={(list) => list.list_id}
             renderItem={({ item }) => {
               return (
-                <TouchableOpacity onPress={() => {}} activeOpacity={0.6}>
+                <TouchableOpacity
+                  onPress={() => handleListClick(item)}
+                  activeOpacity={0.6}
+                >
                   <OwnedListTile item={item} />
                 </TouchableOpacity>
               );
             }}
+            ListEmptyComponent={
+              <Text style={styles.emptyListText}>No lists owned</Text>
+            }
           />
-        ) : (
-          <Text style={styles.emptyListText}>No lists available</Text>
         )}
       </View>
     </>

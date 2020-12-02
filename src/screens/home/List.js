@@ -4,6 +4,7 @@ import React, {
   useLayoutEffect,
   useState,
   useCallback,
+  useContext,
 } from 'react';
 import {
   View,
@@ -11,7 +12,9 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
+  Alert,
 } from 'react-native';
+import { AuthContext } from '../../contexts/AuthContext';
 import { Image, Button } from 'react-native-elements';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,33 +24,68 @@ import AddItem from './AddItem';
 import Constants from 'expo-constants';
 import Loading from '../../components/Loading';
 import { useHeaderHeight } from '@react-navigation/stack';
-import { getListItems, deleteItem } from '../../firebase';
+import { getListItems, deleteItem, joinList } from '../../firebase';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import DeleteSwipe from '../../components/SwipeActions/DeleteSwipe';
 
 const List = ({ navigation, route }) => {
+  const { user } = useContext(AuthContext);
   const { item } = route.params;
   const headerImage = item.image;
   const refRBSheet = useRef();
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
 
+  const [list, setList] = useState(item);
   const [listItems, setListItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const handleItemClick = (item) => {
+    const is_user_joined = list.userIds.includes(user.uid);
+    if (!is_user_joined) {
+      return Alert.alert(
+        'Join first!',
+        'You need to join this list first in order to view items details',
+        [
+          {
+            text: 'Dismiss',
+            onPress: () => null,
+            style: 'destructive',
+          },
+        ],
+        { cancelable: true }
+      );
+    }
     navigation.navigate('Item', { item });
   };
 
   const getData = async () => {
     try {
-      const res = await getListItems(item.list_id);
+      const res = await getListItems(list.list_id);
       setListItems(res);
     } catch (err) {
       console.log('ERR: ', err);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleJoinList = async () => {
+    return joinList(user, list.list_id)
+      .then(() => {
+        const userIds = list.userIds;
+        const users = list.users;
+        userIds.push(user.uid);
+        users.push({
+          id: user.uid,
+          name: user.username,
+        });
+        console.log('New Obj:\n', { ...list, userIds, users });
+        setList({ ...list, userIds, users });
+      })
+      .catch((err) => {
+        console.log('ERR @ handleJoinList (List.js)\n', err);
+      });
   };
 
   const [refreshing, setRefreshing] = useState(false);
@@ -58,10 +96,12 @@ const List = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    if (item) getData();
-  }, [item]);
+    if (list) getData();
+  }, [list]);
 
   useLayoutEffect(() => {
+    const is_user_joined = list.userIds.includes(user.uid);
+
     navigation.setOptions({
       headerTitle: ' ',
       headerTransparent: true,
@@ -73,13 +113,15 @@ const List = ({ navigation, route }) => {
             fontSize: 14,
             paddingHorizontal: 5,
           }}
-          title="Add Item"
+          title={is_user_joined ? 'Add Item' : 'Join'}
           type="clear"
-          onPress={() => refRBSheet.current.open()}
+          onPress={() =>
+            is_user_joined ? refRBSheet.current.open() : handleJoinList()
+          }
         />
       ),
     });
-  }, [navigation]);
+  }, [navigation, list]);
 
   return (
     <View
@@ -113,7 +155,7 @@ const List = ({ navigation, route }) => {
                   color: colors.blueish_grey,
                 }}
               >
-                {item.name}
+                {list.name}
               </Text>
             </View>
           );
@@ -138,22 +180,26 @@ const List = ({ navigation, route }) => {
           ) : listItems && listItems.length > 0 ? (
             listItems.map((item) => {
               const refSwipe = React.createRef();
+              const is_user_joined = list.userIds.includes(user.uid);
+              const is_author = item.author.id === user.uid;
 
               return (
                 <Swipeable
                   ref={refSwipe}
                   key={item.item_id}
                   renderRightActions={(progress, dragX) =>
-                    DeleteSwipe(progress, dragX, () => {
-                      refSwipe.current.close();
-                      return deleteItem(
-                        item.item_id,
-                        item.list_id,
-                        () => onRefresh(),
-                        (err) =>
-                          console.log('ERR @ deleteItem (List.js):\n', err)
-                      );
-                    })
+                    is_user_joined && is_author
+                      ? DeleteSwipe(progress, dragX, () => {
+                          refSwipe.current.close();
+                          return deleteItem(
+                            item.item_id,
+                            item.list_id,
+                            () => onRefresh(),
+                            (err) =>
+                              console.log('ERR @ deleteItem (List.js):\n', err)
+                          );
+                        })
+                      : null
                   }
                 >
                   <TouchableOpacity
