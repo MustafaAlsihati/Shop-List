@@ -54,9 +54,18 @@ const SignIn = ({ navigation }) => {
 
     return await signIn(user.email.trim(), user.password).catch((err) => {
       setLoading(false);
+      let title = 'Something went wrong';
+      let body = 'Error occurred while logging in, please try again';
+
+      if (err.code == 'auth/wrong-password') {
+        title = "We couldn't log you in";
+        body =
+          "Sorry, we couldn't find an account matching this email address and password, please try again or create new account.";
+      }
+
       Alert.alert(
-        'Something went wrong',
-        'Error occurred while logging in, please try again',
+        title,
+        body,
         [
           {
             text: 'Dismiss',

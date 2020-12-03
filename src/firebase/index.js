@@ -28,12 +28,7 @@ export const auth = firebaseApp.auth();
 export const storage = firebaseApp.storage();
 
 export const signInWithEmailAndPassword = async (email, password) => {
-  return firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
-    .catch(function (error) {
-      throw Error(error.message);
-    });
+  return firebase.auth().signInWithEmailAndPassword(email, password);
 };
 
 export const signUpWithEmailAndPassword = async (user) => {

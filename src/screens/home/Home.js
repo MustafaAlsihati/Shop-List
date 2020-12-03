@@ -42,6 +42,7 @@ const Home = ({ navigation }) => {
       'Confirm',
       'Are you sure you want to leave this list?',
       [
+        { text: 'Dismiss', onPress: () => {}, style: 'cancel' },
         {
           text: 'Leave',
           onPress: () => {
@@ -54,7 +55,6 @@ const Home = ({ navigation }) => {
           },
           style: 'destructive',
         },
-        { text: 'Dismiss', onPress: () => {}, style: 'cancel' },
       ],
       { cancelable: true }
     );
@@ -65,6 +65,7 @@ const Home = ({ navigation }) => {
       'Confirm',
       'Are you sure you want to delete this list?',
       [
+        { text: 'Dismiss', onPress: () => {}, style: 'cancel' },
         {
           text: 'Delete',
           onPress: () => {
@@ -76,7 +77,6 @@ const Home = ({ navigation }) => {
           },
           style: 'destructive',
         },
-        { text: 'Dismiss', onPress: () => {}, style: 'cancel' },
       ],
       { cancelable: true }
     );
