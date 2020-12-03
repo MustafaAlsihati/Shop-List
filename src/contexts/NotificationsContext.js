@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, createContext } from 'react';
+import _ from 'lodash';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import { auth, db } from '../firebase';
@@ -68,7 +69,7 @@ const registerForPushNotificationsAsync = async () => {
       });
     }
 
-    if (uid) {
+    if (!_.isEmpty(uid)) {
       await db
         .collection('users')
         .doc(uid)

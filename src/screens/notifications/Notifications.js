@@ -24,7 +24,6 @@ const Notifications = () => {
   const getNotificationsList = async () => {
     try {
       const res = await getNotifications(user.uid);
-      console.log('RES:\n', res);
       setNotifications(res);
     } catch (err) {
       console.log('ERR @ getNotifications\n', err);
