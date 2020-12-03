@@ -12,10 +12,11 @@ import {
   TouchableOpacity,
   RefreshControl,
   FlatList,
+  Alert,
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { styles, colors } from '../../constants/Theme';
-import { getJoinedList, deleteList } from '../../firebase';
+import { getJoinedList, deleteList, leaveList } from '../../firebase';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ListTile from '../../components/ListTile';
@@ -35,6 +36,51 @@ const Home = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [editSelectedList, setEditSelectedList] = useState({});
   const handleTileClick = (item) => navigation.navigate('List', { item });
+
+  const handleLeaveList = (list_id) => {
+    return Alert.alert(
+      'Confirm',
+      'Are you sure you want to leave this list?',
+      [
+        {
+          text: 'Leave',
+          onPress: () => {
+            return leaveList(
+              user,
+              list_id,
+              () => onRefresh(),
+              (err) => console.log('ERR @ leaving list\n', err)
+            );
+          },
+          style: 'destructive',
+        },
+        { text: 'Dismiss', onPress: () => {}, style: 'cancel' },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const handleDeleteList = (list_id) => {
+    return Alert.alert(
+      'Confirm',
+      'Are you sure you want to delete this list?',
+      [
+        {
+          text: 'Delete',
+          onPress: () => {
+            return deleteList(
+              list_id,
+              () => onRefresh(),
+              (err) => console.log('ERR @ deleteList (Home.js):\n', err)
+            );
+          },
+          style: 'destructive',
+        },
+        { text: 'Dismiss', onPress: () => {}, style: 'cancel' },
+      ],
+      { cancelable: true }
+    );
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -110,17 +156,12 @@ const Home = ({ navigation }) => {
                   : null
               }
               renderRightActions={(progress, dragX) =>
-                is_author
-                  ? DeleteSwipe(progress, dragX, () => {
-                      refSwipe.current.close();
-                      return deleteList(
-                        item.list_id,
-                        () => onRefresh(),
-                        (err) =>
-                          console.log('ERR @ deleteList (Home.js):\n', err)
-                      );
-                    })
-                  : null
+                DeleteSwipe(progress, dragX, () => {
+                  refSwipe.current.close();
+                  is_author
+                    ? handleDeleteList(item.list_id)
+                    : handleLeaveList(item.list_id);
+                })
               }
             >
               <TouchableOpacity

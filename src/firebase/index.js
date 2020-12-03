@@ -88,17 +88,38 @@ export const updateSettings = async (uid, obj, cb, err) => {
     });
 };
 
-export const sendNotification = async (uid, content, cb, err) => {
-  const ref = db.collection('users').doc(uid).collection('notifications');
-  const notification_id = ref.doc().id;
+export const sendUserJoinedNotification = async (
+  uid,
+  author_id,
+  content,
+  cb,
+  err
+) => {
+  const notificationRef = db
+    .collection('users')
+    .doc(author_id)
+    .collection('notifications');
+  const notification_id = notificationRef.doc().id;
 
-  console.log('content: ', { ...content, notification_id });
+  let pushToken = null;
+  await db
+    .collection('users')
+    .doc(author_id)
+    .get()
+    .then((snap) => {
+      pushToken = snap.data().expo_push_token;
+    });
 
-  return ref
+  return notificationRef
     .doc(notification_id)
-    .set({ ...content, notification_id })
+    .set({
+      ...content,
+      uid,
+      notification_id,
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+    })
     .then(() => {
-      if (cb) cb();
+      if (cb) cb(pushToken);
     })
     .catch((error) => {
       if (err) err(error);
@@ -371,4 +392,31 @@ export const joinList = async (user, list_id) => {
         name: user.username,
       }),
     });
+};
+
+export const getNotifications = async (uid) => {
+  const snapshot = await db
+    .collection('users')
+    .doc(uid)
+    .collection('notifications')
+    .get();
+
+  return snapshot.docs.map((doc) => doc.data());
+};
+
+export const leaveList = async (user, list_id, cb, err) => {
+  return db
+    .collection('lists')
+    .doc(list_id)
+    .update({
+      userIds: firebase.firestore.FieldValue.arrayRemove(user.uid),
+      users: firebase.firestore.FieldValue.arrayRemove({
+        id: user.uid,
+        name: user.username,
+      }),
+    })
+    .then(() => {
+      if (cb) cb();
+    })
+    .catch((error) => err(error));
 };

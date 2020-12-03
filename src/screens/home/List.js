@@ -24,7 +24,13 @@ import AddItem from './AddItem';
 import Constants from 'expo-constants';
 import Loading from '../../components/Loading';
 import { useHeaderHeight } from '@react-navigation/stack';
-import { getListItems, deleteItem, joinList } from '../../firebase';
+import {
+  getListItems,
+  deleteItem,
+  joinList,
+  sendUserJoinedNotification,
+} from '../../firebase';
+import { sendPushNotification } from '../../js/utils';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import DeleteSwipe from '../../components/SwipeActions/DeleteSwipe';
 
@@ -80,8 +86,25 @@ const List = ({ navigation, route }) => {
           id: user.uid,
           name: user.username,
         });
-        console.log('New Obj:\n', { ...list, userIds, users });
         setList({ ...list, userIds, users });
+      })
+      .then(() => {
+        const author = list.author;
+        const content = {
+          title: `${user.username} joined your list`,
+          body: `New user ${user.username} joined your ${list.name} list`,
+          data: '',
+        };
+
+        return sendUserJoinedNotification(
+          user.uid,
+          author,
+          content,
+          (author_push_token) =>
+            sendPushNotification(author_push_token, content),
+          (err) =>
+            console.log('ERR @ handleJoinList (send notification)\n', err)
+        );
       })
       .catch((err) => {
         console.log('ERR @ handleJoinList (List.js)\n', err);

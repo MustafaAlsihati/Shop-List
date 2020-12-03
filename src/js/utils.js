@@ -1,4 +1,5 @@
 import Currencies from '../constants/Currencies';
+import * as Notifications from 'expo-notifications';
 
 export function validateEmail(email) {
   const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -24,4 +25,26 @@ export const filterCurrencies = (currency, term) => {
     currency.symbol && currency.symbol.toLowerCase().includes(term);
 
   return code || name || symbol;
+};
+
+export const sendPushNotification = async (expoPushToken, content) => {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: content.title,
+    body: content.body,
+    data: {
+      data: content.data,
+    },
+  };
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
 };

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { isObjEmpty } from '../js/utils';
 import { db, auth } from '../firebase';
 
 export const AuthContext = createContext({
