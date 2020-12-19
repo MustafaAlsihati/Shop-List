@@ -2,9 +2,9 @@
   "expo": {
     "name": "shoplist",
     "slug": "shoplist",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app_icon.png",
     "userInterfaceStyle": "dark",
     "notification": {
       "icon": "./assets/app_icon.png"
@@ -20,12 +20,16 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "userInterfaceStyle": "dark"
+      "userInterfaceStyle": "dark",
+      "bundleIdentifier": "com.alsihati.shoplist",
+      "buildNumber": "1.0.0"
     },
     "web": {
       "favicon": "./assets/logo.png"
     },
     "android": {
+      "package": "com.alsihati.shoplist",
+      "versionCode": 1,
       "userInterfaceStyle": "dark",
       "useNextNotificationsApi": true
     },

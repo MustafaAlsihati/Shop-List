@@ -31,7 +31,6 @@ const Home = ({ navigation }) => {
   const refRBSheet = useRef();
   const insets = useSafeAreaInsets();
 
-  const [username, setUsername] = useState('');
   const [lists, setLists] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editSelectedList, setEditSelectedList] = useState({});
@@ -112,10 +111,11 @@ const Home = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (user) {
-      setUsername(user.username);
-      getData();
-    }
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (user) getData();
+    });
+
+    return unsubscribe;
   }, [user]);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -129,7 +129,9 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.View}>
-      <Text style={styles.headerLabel}>Welcome, {username}!</Text>
+      <Text style={styles.headerLabel}>
+        Welcome, {user && user.username ? user.username : ''}!
+      </Text>
       <FlatList
         style={{
           ...styles.tiles,

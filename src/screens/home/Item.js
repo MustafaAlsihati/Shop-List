@@ -127,7 +127,7 @@ const Item = ({ navigation, route }) => {
 
           <View style={{ flex: 1, justifyContent: 'flex-end' }}>
             <Text style={{ ...styles.itemTileInfo, marginBottom: 10 }}>
-              Created on {date}
+              Added on {date}
             </Text>
             <Button
               onPress={() => Linking.openURL(listItem.link)}
@@ -157,11 +157,8 @@ const Item = ({ navigation, route }) => {
       </View>
 
       <EditItem
-        {...{ refRBSheet, handleInputChange }}
-        item={listItem}
-        onClose={() => {
-          refRBSheet.current.close();
-        }}
+        {...{ refRBSheet, setListItem, handleInputChange, item: listItem }}
+        onClose={() => refRBSheet.current.close()}
       />
     </View>
   );

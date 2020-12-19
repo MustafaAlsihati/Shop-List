@@ -23,7 +23,13 @@ const loadingInitState = {
   disableSubmit: false,
 };
 
-const EditItem = ({ refRBSheet, onClose, handleInputChange, item }) => {
+const EditItem = ({
+  refRBSheet,
+  setListItem,
+  handleInputChange,
+  item,
+  onClose,
+}) => {
   const { user } = useContext(AuthContext);
   const [inputOpacity, setInputOpacity] = useState(inputInitState);
   const [loading, setLoading] = useState(loadingInitState);
@@ -54,8 +60,8 @@ const EditItem = ({ refRBSheet, onClose, handleInputChange, item }) => {
     return editItem(
       item,
       user,
-      (uploaded_image_url) => {
-        handleInputChange(uploaded_image_url, 'image');
+      (obj) => {
+        setListItem(obj);
         onClose();
       },
       (err) => {

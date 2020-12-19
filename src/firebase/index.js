@@ -272,16 +272,18 @@ export const editList = async (list, cb, err) => {
       ? await uploadImage(list.image, list.name, list_id)
       : null;
 
+  const new_obj = {
+    ...list,
+    search_term: list.name.toLowerCase(),
+    image: uploaded_image_url,
+  };
+
   return db
     .collection('lists')
     .doc(list.list_id)
-    .update({
-      ...list,
-      search_term: list.name.toLowerCase(),
-      image: uploaded_image_url,
-    })
+    .update(new_obj)
     .then(() => {
-      if (cb) cb();
+      if (cb) cb(new_obj);
     })
     .catch((error) => {
       if (err) err(error);
@@ -296,19 +298,21 @@ export const editItem = async (item, user, cb, err) => {
       ? await uploadImage(item.image, item.name, item_id)
       : null;
 
+  const new_obj = {
+    ...item,
+    search_term: item.name.toLowerCase(),
+    image: uploaded_image_url,
+    currency_code: user.settings.currency.code,
+  };
+
   return db
     .collection('lists')
     .doc(item.list_id)
     .collection('items')
     .doc(item.item_id)
-    .update({
-      ...item,
-      search_term: item.name.toLowerCase(),
-      image: uploaded_image_url,
-      currency_code: user.settings.currency.code,
-    })
+    .update(new_obj)
     .then(() => {
-      if (cb) cb(uploaded_image_url);
+      if (cb) cb(new_obj);
     })
     .catch((error) => {
       if (err) err(error);

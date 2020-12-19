@@ -119,7 +119,11 @@ const List = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    if (list) getData();
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (list) getData();
+    });
+
+    return unsubscribe;
   }, [list]);
 
   useLayoutEffect(() => {
