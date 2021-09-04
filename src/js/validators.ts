@@ -1,7 +1,8 @@
 import _ from 'lodash';
+import { User } from '../constants/types';
 import { validateEmail } from './utils';
 
-export function signUpValidator(user: any, setInputErrs: (v: any) => void) {
+export function signUpValidator(user: Partial<User> & { password: string; confirmPassword: string }, setInputErrs: (v: any) => void) {
   let valid = true;
   let errs = {
     username: '',
@@ -10,15 +11,15 @@ export function signUpValidator(user: any, setInputErrs: (v: any) => void) {
     confirmPassword: '',
   };
 
-  if (_.isEmpty(user.username)) {
+  if (!user.username || _.isEmpty(user.username)) {
     errs = { ...errs, username: 'Username should not be empty' };
     valid = false;
-  } else if (/\s/.test(user.username)) {
+  } else if (user.username && /\s/.test(user.username)) {
     errs = { ...errs, username: 'Username should not have any whitespaces' };
     valid = false;
   }
 
-  if (_.isEmpty(user.email) || !validateEmail(user.email)) {
+  if (_.isEmpty(user.email) || (user.email && !validateEmail(user.email))) {
     errs = { ...errs, email: 'Email address should be valid' };
     valid = false;
   }

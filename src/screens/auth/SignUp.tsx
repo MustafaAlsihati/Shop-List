@@ -6,6 +6,7 @@ import { Entypo, Feather, AntDesign } from '@expo/vector-icons';
 import { signUpWithEmailAndPassword as signUp } from '../../firebase/index';
 import _ from 'lodash';
 import { signUpValidator } from '../../js/validators';
+import { User } from '../../constants/types';
 
 const userObj = {
   username: '',
@@ -16,7 +17,7 @@ const userObj = {
 
 const SignUp = React.memo(({}) => {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(userObj);
+  const [user, setUser] = useState<Partial<User> & { password: string; confirmPassword: string }>(userObj);
   const [inputErrs, setInputErrs] = useState(userObj);
   const [hidePassword, setHidePassword] = useState(true);
   const [inputOpacity, setInputOpacity] = useState({

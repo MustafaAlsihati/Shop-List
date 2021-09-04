@@ -395,6 +395,7 @@ export const bottomSheetStyle = {
 export const stackOptions = {
   headerTitleAlign: 'center',
   headerBackTitle: ' ',
+  presentation: 'card',
   headerBackImage: () => (
     <View>
       <ArrowLeft size={28} />

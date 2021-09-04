@@ -11,12 +11,13 @@ import { AuthContext } from '../../contexts/AuthContext';
 import MenuPopup from '../../components/MenuPopup';
 import { MenuItem, MenuDivider } from 'react-native-material-menu';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { Item, List } from '../../constants/types';
 
 const Account = React.memo<any>(({ navigation }: any) => {
   const refMenu = useRef<RBSheet>(null);
   const { user } = useContext(AuthContext);
-  const [userLists, setUserLists] = useState<any[]>([]);
-  const [userItems, setUserItems] = useState(0);
+  const [userLists, setUserLists] = useState<List[]>([]);
+  const [userItems, setUserItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const openSettings = () => {
@@ -81,7 +82,7 @@ const Account = React.memo<any>(({ navigation }: any) => {
 
   const getUserLists = async () => {
     try {
-      const result: any[] = await getMyLists(user?.uid!);
+      const result: List[] = await getMyLists(user?.uid!);
       setUserLists(result);
     } catch (err) {
       console.log('ERR @ getUserLists: ', err);
@@ -93,7 +94,7 @@ const Account = React.memo<any>(({ navigation }: any) => {
   const getUserItems = async () => {
     try {
       const itemsResult = await getMyItems(user?.uid!);
-      setUserItems(itemsResult.length);
+      setUserItems(itemsResult);
     } catch (err) {
       console.log('ERR @ getUserItems: ', err);
     } finally {

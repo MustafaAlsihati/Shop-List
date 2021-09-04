@@ -2,6 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
+import { Item, List, User } from '../constants/types';
 
 /* ################################### Firebase Configs ###################################### */
 
@@ -33,10 +34,10 @@ export const signInWithEmailAndPassword = async (email: string, password: string
   return firebase.auth().signInWithEmailAndPassword(email, password);
 };
 
-export const signUpWithEmailAndPassword = async (user: { username: string; email: string; password: string }) => {
+export const signUpWithEmailAndPassword = async (user: Partial<User> & { password: string; confirmPassword: string }) => {
   return firebase
     .auth()
-    .createUserWithEmailAndPassword(user.email, user.password)
+    .createUserWithEmailAndPassword(user.email!, user.password)
     .then(result => {
       const uid = result.user?.uid;
       return db
@@ -124,13 +125,13 @@ export const getJoinedList = async (uid: string) => {
 export const getMyLists = async (uid: string) => {
   const snapshot = await db.collection('lists').where('author', '==', uid).orderBy('created', 'desc').get();
 
-  return snapshot.docs.map(doc => doc.data());
+  return snapshot.docs.map(doc => doc.data() as List);
 };
 
 export const getMyItems = async (uid: string) => {
   const snapshot = await db.collectionGroup('items').where('author.id', '==', uid).orderBy('created', 'desc').get();
 
-  return snapshot.docs.map(doc => doc.data());
+  return snapshot.docs.map(doc => doc.data() as Item);
 };
 
 export const getListItems = async (list_id: string) => {
@@ -161,7 +162,7 @@ const uploadImage = async (image: any, name: string, id: string) => {
   });
 };
 
-export const addList = async (list: any, user: any, cb: () => void, err: (e: any) => void) => {
+export const addList = async (list: List, user: User, cb: () => void, err: (e: any) => void) => {
   const list_id = db.collection('lists').doc().id;
   const uploaded_image_url = list.image ? await uploadImage(list.image, list.name, list_id) : null;
 
@@ -198,7 +199,7 @@ export const addList = async (list: any, user: any, cb: () => void, err: (e: any
     });
 };
 
-export const addItem = async (item: any, list_id: string, user: any, cb: () => void, err: (e: any) => void) => {
+export const addItem = async (item: Item, list_id: string, user: User, cb: () => void, err: (e: any) => void) => {
   const item_id = db.collection('lists').doc(list_id).collection('items').doc().id;
   const uploaded_image_url = item.image ? await uploadImage(item.image, item.name, item_id) : null;
 
@@ -207,13 +208,14 @@ export const addItem = async (item: any, list_id: string, user: any, cb: () => v
       ...item,
       item_id,
       list_id,
+      price: Number(item.price),
       search_term: item.name.toLowerCase(),
       image: uploaded_image_url,
       author: {
         id: user.uid,
         username: user.username,
       },
-      currency_code: user.settings.currency.code,
+      currency_code: user.settings?.currency?.code,
     })
   );
 
@@ -234,7 +236,7 @@ export const addItem = async (item: any, list_id: string, user: any, cb: () => v
     });
 };
 
-export const editList = async (list: any, cb: (v: any) => void, err: (e: any) => void) => {
+export const editList = async (list: List, cb: (v: any) => void, err: (e: any) => void) => {
   const uploaded_image_url =
     list.image && is_link(list.image) ? list.image : list.image ? await uploadImage(list.image, list.name, list.list_id) : null;
 
@@ -256,7 +258,7 @@ export const editList = async (list: any, cb: (v: any) => void, err: (e: any) =>
     });
 };
 
-export const editItem = async (item: any, user: any, cb: (v: any) => void, err: (e: any) => void) => {
+export const editItem = async (item: Item, user: User, cb: (v: any) => void, err: (e: any) => void) => {
   const uploaded_image_url =
     item.image && is_link(item.image) ? item.image : item.image ? await uploadImage(item.image, item.name, item.item_id) : null;
 
@@ -264,7 +266,8 @@ export const editItem = async (item: any, user: any, cb: (v: any) => void, err: 
     ...item,
     search_term: item.name.toLowerCase(),
     image: uploaded_image_url,
-    currency_code: user.settings.currency.code,
+    currency_code: user.settings?.currency?.code,
+    price: Number(item.price),
   };
 
   return db
@@ -309,7 +312,7 @@ export const deleteItem = async (item_id: any, list_id: string, cb: () => void, 
     });
 };
 
-export const updateProfilePic = async (user: any, image: any, cb: () => void, err: (e: any) => void) => {
+export const updateProfilePic = async (user: User, image: any, cb: () => void, err: (e: any) => void) => {
   const uploaded_image_url = image ? await uploadImage(image, user.username, user.uid) : null;
 
   return db
@@ -340,7 +343,7 @@ export const searchLists = async (term: string) => {
   return snapshot.docs.map(doc => doc.data());
 };
 
-export const joinList = async (user: any, list_id: string) => {
+export const joinList = async (user: User, list_id: string) => {
   return db
     .collection('lists')
     .doc(list_id)
@@ -359,7 +362,7 @@ export const getNotifications = async (uid: string) => {
   return snapshot.docs.map(doc => doc.data());
 };
 
-export const leaveList = async (user: any, list_id: string, cb: () => void, err: (e: any) => void) => {
+export const leaveList = async (user: User, list_id: string, cb: () => void, err: (e: any) => void) => {
   return db
     .collection('lists')
     .doc(list_id)

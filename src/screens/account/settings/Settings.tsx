@@ -8,13 +8,14 @@ import Divider from '../../../components/Divider';
 import CurrencySheet from './CurrencySheet';
 import { updateSettings } from '../../../firebase';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { Settings } from '../../../constants/types';
 
 const Settings = React.memo(props => {
   const currencySheet = useRef<RBSheet>(null);
   const { user }: any = useContext(AuthContext);
-  const [userSettings, setUserSettings] = useState<any>(user.settings);
+  const [userSettings, setUserSettings] = useState<Settings>(user.settings);
 
-  const handleInputChange = (val: any, key: string) => setUserSettings((prev: object) => ({ ...prev, [key]: val }));
+  const handleInputChange = (val: any, key: string) => setUserSettings(prev => ({ ...prev, [key]: val }));
 
   const UpdateSettings = () => {
     return updateSettings(

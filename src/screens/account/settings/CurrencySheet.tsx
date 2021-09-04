@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, FlatList, Text, TouchableOpacity } from 'react-native';
 import { List } from 'react-native-paper';
 import { Input, Button } from 'react-native-elements';
@@ -20,8 +20,11 @@ const CurrencySheet = React.memo(({ refRBSheet, userSettings, UpdateSettings, on
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
   const [inputOpacity, setInputOpacity] = useState<any>(inputInitState);
-  let currencies = Object.keys(Currencies).map(i => Currencies[i]);
-  currencies = currencies.sort((a, b) => a.name.localeCompare(b.name));
+  let currencies = useMemo(() => {
+    return Object.keys(Currencies)
+      .map(i => Currencies[i])
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [Currencies]);
 
   const handleSubmit = async () => {
     onClose();

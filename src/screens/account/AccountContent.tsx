@@ -3,9 +3,10 @@ import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { styles } from '../../constants/Theme';
 import OwnedListTile from '../../components/OwnedListTile';
 import Loading from '../../components/Loading';
+import { List } from '../../constants/types';
 
 const AccountContent = React.memo(({ navigation, user, userLists, isLoading }: any) => {
-  const handleListClick = (item: any) => navigation.navigate('List', { item });
+  const handleListClick = (item: List) => navigation.navigate('List', { item });
 
   return (
     <>
