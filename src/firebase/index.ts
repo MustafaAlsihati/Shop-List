@@ -27,6 +27,8 @@ export const db = firebaseApp.firestore();
 export const auth = firebaseApp.auth();
 export const storage = firebaseApp.storage();
 
+export default firebase;
+
 export const signInWithEmailAndPassword = async (email: string, password: string) => {
   return firebase.auth().signInWithEmailAndPassword(email, password);
 };

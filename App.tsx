@@ -9,36 +9,25 @@ import { AuthProvider, AuthContext } from './src/contexts/AuthContext';
 import { NotificationsProvider } from './src/contexts/NotificationsContext';
 import { AppearanceProvider } from 'react-native-appearance';
 
-const App = () => {
-  const { user, loading } = useContext(AuthContext);
-
-  // Show loading:
-  if (loading) return <Loading />;
-
-  // check Auth and redirect:
-  return (
-    <>
-      {user ? (
-        <NotificationsProvider {...{ user }}>
-          <BottomTabs />
-        </NotificationsProvider>
-      ) : (
-        <AuthStack />
-      )}
-      <StatusBar style="light" translucent />
-    </>
-  );
-};
-
-export default () => {
+function App() {
   let fontsLoaded = useFont();
+  const { user, loading } = useContext(AuthContext);
 
   return (
     <AppearanceProvider>
       <AuthProvider>
         {fontsLoaded ? (
           <SafeAreaProvider>
-            <App />
+            <StatusBar style="light" translucent />
+            {loading ? (
+              <Loading />
+            ) : user ? (
+              <NotificationsProvider {...{ user }}>
+                <BottomTabs />
+              </NotificationsProvider>
+            ) : (
+              <AuthStack />
+            )}
           </SafeAreaProvider>
         ) : (
           <Loading />
@@ -46,4 +35,6 @@ export default () => {
       </AuthProvider>
     </AppearanceProvider>
   );
-};
+}
+
+export default React.memo(App);
