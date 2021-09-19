@@ -1,6 +1,11 @@
 import firebase from '../firebase';
 import { CurrencyType } from './Currencies';
 
+export type ReduxState = {
+  Language: string;
+  User: User | null;
+};
+
 export type List = {
   author?: string;
   created?: firebase.firestore.Timestamp | Date;

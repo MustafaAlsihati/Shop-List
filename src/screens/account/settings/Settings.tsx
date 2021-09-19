@@ -1,31 +1,33 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { ScrollView, Text, TouchableOpacity } from 'react-native';
 import { List } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { AuthContext } from '../../../contexts/AuthContext';
 import { styles, colors } from '../../../constants/Theme';
 import Divider from '../../../components/Divider';
 import CurrencySheet from './CurrencySheet';
 import { updateSettings } from '../../../firebase';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { Settings } from '../../../constants/types';
+import { ReduxState, Settings } from '../../../constants/types';
+import { useSelector } from 'react-redux';
 
-const Settings = React.memo(props => {
+export default React.memo(function () {
   const currencySheet = useRef<RBSheet>(null);
-  const { user }: any = useContext(AuthContext);
-  const [userSettings, setUserSettings] = useState<Settings>(user.settings);
+  const { user } = useSelector((state: ReduxState) => ({ user: state.User }));
+  const [userSettings, setUserSettings] = useState<Settings>(user?.settings || {});
 
   const handleInputChange = (val: any, key: string) => setUserSettings(prev => ({ ...prev, [key]: val }));
 
   const UpdateSettings = () => {
-    return updateSettings(
-      user.uid,
-      userSettings,
-      () => {},
-      err => {
-        console.log('ERR @ UpdateSettings (Settings.js):\n', err);
-      }
-    );
+    if (user) {
+      updateSettings(
+        user.uid,
+        userSettings,
+        () => {},
+        err => {
+          console.log('ERR @ UpdateSettings (Settings.js):\n', err);
+        }
+      );
+    }
   };
 
   return (
@@ -55,5 +57,3 @@ const Settings = React.memo(props => {
     </ScrollView>
   );
 });
-
-export default Settings;

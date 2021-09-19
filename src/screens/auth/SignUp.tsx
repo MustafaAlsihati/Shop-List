@@ -34,21 +34,24 @@ const SignUp = React.memo(({}) => {
       return;
     }
 
-    return await signUp(user).catch(err => {
-      setLoading(false);
-      Alert.alert(
-        'Something went wrong',
-        'Error occurred while logging in, please try again',
-        [
-          {
-            text: 'Dismiss',
-            onPress: () => {},
-            style: 'cancel',
-          },
-        ],
-        { cancelable: true }
-      );
-    });
+    signUp(user)
+      .catch(err => {
+        Alert.alert(
+          'Something went wrong',
+          'Error occurred while logging in, please try again',
+          [
+            {
+              text: 'Dismiss',
+              onPress: () => {},
+              style: 'cancel',
+            },
+          ],
+          { cancelable: true }
+        );
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const handleInputChange = (val: any, key: string) => setUser(prev => ({ ...prev, [key]: val }));

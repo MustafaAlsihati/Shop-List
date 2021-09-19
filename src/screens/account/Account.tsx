@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useContext, useLayoutEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { View, ScrollView, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Alert, RefreshControl, Text, Platform } from 'react-native';
 import Divider from '../../components/Divider';
 import { Feather } from '@expo/vector-icons';
@@ -7,15 +7,15 @@ import { colors, styles } from '../../constants/Theme';
 import AccountHeader from './AccountHeader';
 import AccountContent from './AccountContent';
 import { signOut, getMyLists, getMyItems } from '../../firebase/index';
-import { AuthContext } from '../../contexts/AuthContext';
-import MenuPopup from '../../components/MenuPopup';
-import { MenuItem, MenuDivider } from 'react-native-material-menu';
+// import MenuPopup from '../../components/MenuPopup';
+// import { MenuItem, MenuDivider } from 'react-native-material-menu';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { Item, List } from '../../constants/types';
+import { Item, List, ReduxState } from '../../constants/types';
+import { useSelector } from 'react-redux';
 
-const Account = React.memo<any>(({ navigation }: any) => {
+const Account = React.memo(({ navigation }: any) => {
   const refMenu = useRef<RBSheet>(null);
-  const { user } = useContext(AuthContext);
+  const { user } = useSelector((state: ReduxState) => ({ user: state.User }));
   const [userLists, setUserLists] = useState<List[]>([]);
   const [userItems, setUserItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,40 +25,40 @@ const Account = React.memo<any>(({ navigation }: any) => {
     navigation.navigate('Settings');
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <MenuPopup
-          {...{ refMenu }}
-          menuItems={
-            <>
-              <MenuItem onPress={openSettings}>
-                <View style={[styles.menuItemsWithIcon, Platform.OS === 'ios' ? { paddingHorizontal: 15 } : {}]}>
-                  <Settings size={22} color={colors.blueish_grey} />
-                  <Text style={styles.menuItemText}>Settings</Text>
-                </View>
-              </MenuItem>
-              <View style={{ marginHorizontal: 5 }}>
-                <MenuDivider color={colors.blueish_grey} />
-              </View>
-              <MenuItem onPress={signOutClickHandle}>
-                <View style={[styles.menuItemsWithIcon, Platform.OS === 'ios' ? { paddingHorizontal: 15 } : {}]}>
-                  <Logout size={22} color={colors.blueish_grey} />
-                  <Text style={styles.menuItemText}>Sign Out</Text>
-                </View>
-              </MenuItem>
-            </>
-          }
-        >
-          <TouchableOpacity activeOpacity={0.7} onPress={() => refMenu.current?.open()}>
-            <View style={{ paddingHorizontal: 15 }}>
-              <Feather name="more-vertical" size={24} color={colors.blueish_grey} />
-            </View>
-          </TouchableOpacity>
-        </MenuPopup>
-      ),
-    });
-  }, [navigation]);
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => (
+  //       <MenuPopup
+  //         {...{ refMenu }}
+  //         menuItems={
+  //           <>
+  //             <MenuItem onPress={openSettings}>
+  //               <View style={[styles.menuItemsWithIcon, Platform.OS === 'ios' ? { paddingHorizontal: 15 } : {}]}>
+  //                 <Settings size={22} color={colors.blueish_grey} />
+  //                 <Text style={styles.menuItemText}>Settings</Text>
+  //               </View>
+  //             </MenuItem>
+  //             <View style={{ marginHorizontal: 5 }}>
+  //               <MenuDivider color={colors.blueish_grey} />
+  //             </View>
+  //             <MenuItem onPress={signOutClickHandle}>
+  //               <View style={[styles.menuItemsWithIcon, Platform.OS === 'ios' ? { paddingHorizontal: 15 } : {}]}>
+  //                 <Logout size={22} color={colors.blueish_grey} />
+  //                 <Text style={styles.menuItemText}>Sign Out</Text>
+  //               </View>
+  //             </MenuItem>
+  //           </>
+  //         }
+  //       >
+  //         <TouchableOpacity activeOpacity={0.7} onPress={() => refMenu.current?.open()}>
+  //           <View style={{ paddingHorizontal: 15 }}>
+  //             <Feather name="more-vertical" size={24} color={colors.blueish_grey} />
+  //           </View>
+  //         </TouchableOpacity>
+  //       </MenuPopup>
+  //     ),
+  //   });
+  // }, [navigation]);
 
   const signOutClickHandle = () => {
     Alert.alert(

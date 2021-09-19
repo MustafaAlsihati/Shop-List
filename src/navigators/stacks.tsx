@@ -16,7 +16,7 @@ const Stack = createStackNavigator();
 
 export const HomeStack = React.memo(props => {
   return (
-    <Stack.Navigator screenOptions={stackOptions}>
+    <Stack.Navigator initialRouteName="Home" screenOptions={stackOptions}>
       <Stack.Screen
         name="Home"
         options={{
@@ -44,7 +44,7 @@ export const HomeStack = React.memo(props => {
 
 export const SearchStack = React.memo(props => {
   return (
-    <Stack.Navigator screenOptions={stackOptions}>
+    <Stack.Navigator initialRouteName="Search" screenOptions={stackOptions}>
       <Stack.Screen
         name="Search"
         options={{
@@ -58,7 +58,7 @@ export const SearchStack = React.memo(props => {
 
 export const AccountStack = React.memo(props => {
   return (
-    <Stack.Navigator screenOptions={stackOptions}>
+    <Stack.Navigator initialRouteName="Account" screenOptions={stackOptions}>
       <Stack.Screen
         name="Account"
         options={{
@@ -79,7 +79,7 @@ export const AccountStack = React.memo(props => {
 
 export const NotificationsStack = React.memo(props => {
   return (
-    <Stack.Navigator screenOptions={stackOptions}>
+    <Stack.Navigator initialRouteName="Notifications" screenOptions={stackOptions}>
       <Stack.Screen
         name="Notifications"
         options={{

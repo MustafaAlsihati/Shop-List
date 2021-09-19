@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useLayoutEffect, useState, useCallback, useContext } from 'react';
+import React, { useEffect, useRef, useLayoutEffect, useState, useCallback } from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity, RefreshControl, Alert } from 'react-native';
-import { AuthContext } from '../../contexts/AuthContext';
 import { Image, Button } from 'react-native-elements';
 //@ts-ignore
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
@@ -10,19 +9,19 @@ import ItemTile from '../../components/ItemTile';
 import AddItem from './AddItem';
 import Constants from 'expo-constants';
 import Loading from '../../components/Loading';
-import { useHeaderHeight } from '@react-navigation/stack';
 import { getListItems, deleteItem, joinList, sendUserJoinedNotification } from '../../firebase';
 import { sendPushNotification } from '../../js/utils';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import DeleteSwipe from '../../components/SwipeActions/DeleteSwipe';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../constants/types';
 
 const List = React.memo(({ navigation, route }: any) => {
-  const { user }: any = useContext(AuthContext);
+  const { user } = useSelector((state: ReduxState) => ({ user: state.User }));
   const { item }: any = route.params;
   const headerImage = item.image;
   const refRBSheet = useRef<RBSheet>(null);
-  const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
 
   const [list, setList] = useState<any>(item);
@@ -30,7 +29,7 @@ const List = React.memo(({ navigation, route }: any) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const handleItemClick = (item: any) => {
-    const is_user_joined = list.userIds.includes(user.uid);
+    const is_user_joined = user && list.userIds.includes(user.uid);
     if (!is_user_joined) {
       return Alert.alert(
         'Join first!',
@@ -60,36 +59,38 @@ const List = React.memo(({ navigation, route }: any) => {
   };
 
   const handleJoinList = async () => {
-    return joinList(user, list.list_id)
-      .then(() => {
-        const userIds = list.userIds;
-        const users = list.users;
-        userIds.push(user.uid);
-        users.push({
-          id: user.uid,
-          name: user.username,
-        });
-        setList({ ...list, userIds, users });
-      })
-      .then(() => {
-        const author = list.author;
-        const content = {
-          title: `${user.username} joined your list`,
-          body: `New user ${user.username} joined your ${list.name} list`,
-          data: '',
-        };
+    if (user) {
+      joinList(user, list.list_id)
+        .then(() => {
+          const userIds = list.userIds;
+          const users = list.users;
+          userIds.push(user.uid);
+          users.push({
+            id: user.uid,
+            name: user.username,
+          });
+          setList({ ...list, userIds, users });
+        })
+        .then(() => {
+          const author = list.author;
+          const content = {
+            title: `${user.username} joined your list`,
+            body: `New user ${user.username} joined your ${list.name} list`,
+            data: '',
+          };
 
-        return sendUserJoinedNotification(
-          user.uid,
-          author,
-          content,
-          author_push_token => sendPushNotification(author_push_token, content),
-          err => console.log('ERR @ handleJoinList (send notification)\n', err)
-        );
-      })
-      .catch(err => {
-        console.log('ERR @ handleJoinList (List.js)\n', err);
-      });
+          sendUserJoinedNotification(
+            user.uid,
+            author,
+            content,
+            author_push_token => sendPushNotification(author_push_token, content),
+            err => console.log('ERR @ handleJoinList (send notification)\n', err)
+          );
+        })
+        .catch(err => {
+          console.log('ERR @ handleJoinList (List.js)\n', err);
+        });
+    }
   };
 
   const [refreshing, setRefreshing] = useState(false);
@@ -108,8 +109,7 @@ const List = React.memo(({ navigation, route }: any) => {
   }, [list]);
 
   useLayoutEffect(() => {
-    const is_user_joined = list.userIds.includes(user.uid);
-
+    const is_user_joined = user && list.userIds.includes(user.uid);
     navigation.setOptions({
       headerTitle: ' ',
       headerTransparent: true,
@@ -142,16 +142,18 @@ const List = React.memo(({ navigation, route }: any) => {
         parallaxHeaderHeight={250}
         style={{ marginBottom: 70 + insets.bottom }}
         fadeOutForeground
-        stickyHeaderHeight={headerHeight}
         refreshControl={
           <RefreshControl colors={[colors.green]} progressBackgroundColor={colors.border} refreshing={refreshing} onRefresh={onRefresh} />
         }
+        stickyHeaderHeight={50}
         renderStickyHeader={() => {
           return (
-            <View style={{ height: headerHeight, justifyContent: 'flex-end' }}>
+            <View style={{ justifyContent: 'flex-end' }}>
               <Text
                 style={{
-                  ...(stackOptions.headerTitleStyle as any),
+                  alignSelf: 'center',
+                  fontFamily: 'Montserrat-Medium',
+                  fontSize: 18,
                   marginBottom: 15,
                   color: colors.blueish_grey,
                 }}
@@ -181,8 +183,8 @@ const List = React.memo(({ navigation, route }: any) => {
           ) : listItems && listItems.length > 0 ? (
             listItems.map(item => {
               const refSwipe = React.createRef<any>();
-              const is_user_joined = list.userIds.includes(user.uid);
-              const is_author = item.author.id === user.uid;
+              const is_user_joined = user && list.userIds.includes(user.uid);
+              const is_author = user && item.author.id === user.uid;
 
               return (
                 <Swipeable

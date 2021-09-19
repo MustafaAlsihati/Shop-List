@@ -41,7 +41,9 @@ const SignIn = React.memo(({ navigation }: any) => {
       return;
     }
 
-    return await signIn(user.email.trim(), user.password).catch(err => {
+    try {
+      await signIn(user.email.trim(), user.password);
+    } catch (err: any) {
       setLoading(false);
       let title = 'Something went wrong';
       let body = 'Error occurred while logging in, please try again';
@@ -63,7 +65,7 @@ const SignIn = React.memo(({ navigation }: any) => {
         ],
         { cancelable: true }
       );
-    });
+    }
   };
 
   return (
@@ -124,7 +126,7 @@ const SignIn = React.memo(({ navigation }: any) => {
                   disabled={loading}
                 />
                 <Text style={styles.toSignUplink}>
-                  Forgot Your Password?{' '}
+                  Don't have an account?{' '}
                   <Text style={{ color: colors.green }} onPress={() => navigation.navigate('SignUp')}>
                     Sign Up
                   </Text>

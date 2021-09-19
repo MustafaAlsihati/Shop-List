@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, RefreshControl, FlatList } from 'react-native';
 import { List } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '../../components/Divider';
 import { styles, colors } from '../../constants/Theme';
-import { AuthContext } from '../../contexts/AuthContext';
 import Loading from '../../components/Loading';
 import { getNotifications } from '../../firebase';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../constants/types';
 
 const Notifications = React.memo(props => {
-  const { user }: any = useContext(AuthContext);
+  const { user } = useSelector((state: ReduxState) => ({ user: state.User }));
   const insets = useSafeAreaInsets();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,8 +24,10 @@ const Notifications = React.memo(props => {
 
   const getNotificationsList = async () => {
     try {
-      const res = await getNotifications(user.uid);
-      setNotifications(res);
+      if (user) {
+        const res = await getNotifications(user.uid);
+        setNotifications(res);
+      }
     } catch (err) {
       console.log('ERR @ getNotifications\n', err);
     } finally {

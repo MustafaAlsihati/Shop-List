@@ -1,17 +1,18 @@
-import React, { useState, useRef, useContext, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import * as Linking from 'expo-linking';
 import { Button, Image } from 'react-native-elements';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AuthContext } from '../../contexts/AuthContext';
 import { styles, colors } from '../../constants/Theme';
 import EditItem from './EditItem';
 import Currencies from '../../constants/Currencies';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../constants/types';
 
 const Item = React.memo(({ navigation, route }: any) => {
-  const { user }: any = useContext(AuthContext);
+  const { user } = useSelector((state: ReduxState) => ({ user: state.User }));
   const { item }: any = route.params;
   const [listItem, setListItem] = useState(item);
   const headerImage = listItem.image;
@@ -24,7 +25,7 @@ const Item = React.memo(({ navigation, route }: any) => {
   const handleInputChange = (val: any, key: string) => setListItem((prev: any) => ({ ...prev, [key]: val }));
 
   useLayoutEffect(() => {
-    const is_author = listItem.author.id === user.uid;
+    const is_author = user && listItem.author.id === user.uid;
 
     navigation.setOptions({
       headerTitle: ' ',

@@ -15,19 +15,18 @@ const BottomTabs = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="Home"
-        tabBarOptions={
-          {
-            showLabel: false,
-            activeTintColor: colors.green,
-            inactiveTintColor: colors.blueish_grey,
-            lazy: false,
-            style: { ...bottomTabsStyle, height: 60 + insets.bottom },
-          } as any
-        }
+        initialRouteName="HomeTab"
+        screenOptions={{
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: colors.green,
+          tabBarInactiveTintColor: colors.blueish_grey,
+          lazy: false,
+          tabBarStyle: { ...bottomTabsStyle, height: 60 + insets.bottom } as any,
+          headerShown: false,
+        }}
       >
         <Tab.Screen
-          name="Home"
+          name="HomeTab"
           component={HomeStack}
           options={{
             tabBarIcon: ({ color, focused }) => (
@@ -39,7 +38,7 @@ const BottomTabs = () => {
           }}
         />
         <Tab.Screen
-          name="Notifications"
+          name="NotificationsTab"
           component={NotificationsStack}
           options={{
             tabBarIcon: ({ color, focused }) => (
@@ -51,7 +50,7 @@ const BottomTabs = () => {
           }}
         />
         <Tab.Screen
-          name="Search"
+          name="SearchTab"
           component={SearchStack}
           options={{
             tabBarIcon: ({ color, focused }) => (
@@ -63,7 +62,7 @@ const BottomTabs = () => {
           }}
         />
         <Tab.Screen
-          name="Account"
+          name="AccountTab"
           component={AccountStack}
           options={{
             tabBarIcon: ({ color, focused }) => (

@@ -1,9 +1,9 @@
-import React, { useRef, useState, useEffect, useLayoutEffect, useContext, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, RefreshControl, FlatList, Alert } from 'react-native';
+import { useSelector } from 'react-redux';
 import { Button } from 'react-native-elements';
 import { styles, colors } from '../../constants/Theme';
 import { getJoinedList, deleteList, leaveList } from '../../firebase';
-import { AuthContext } from '../../contexts/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ListTile from '../../components/ListTile';
 import AddList from './AddList';
@@ -12,9 +12,10 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import DeleteSwipe from '../../components/SwipeActions/DeleteSwipe';
 import EditSwipe from '../../components/SwipeActions/EditSwipe';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { ReduxState } from '../../constants/types';
 
 const Home = React.memo(({ navigation }: any) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useSelector((state: ReduxState) => ({ user: state.User }));
   const refRBSheet = useRef<RBSheet>(null);
   const insets = useSafeAreaInsets();
 
@@ -32,7 +33,7 @@ const Home = React.memo(({ navigation }: any) => {
         {
           text: 'Leave',
           onPress: () => {
-            return leaveList(
+            leaveList(
               user,
               list_id,
               () => onRefresh(),
@@ -116,7 +117,7 @@ const Home = React.memo(({ navigation }: any) => {
 
   return (
     <View style={styles.View}>
-      <Text style={styles.headerLabel}>Welcome, {user && user.displayName ? user.displayName : ''}!</Text>
+      <Text style={styles.headerLabel}>Welcome, {user && user.username ? user.username : ''}!</Text>
       <FlatList
         style={{
           ...styles.tiles,

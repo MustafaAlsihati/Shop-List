@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Alert } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Divider from '../../components/Divider';
@@ -8,7 +8,8 @@ import { styles, colors } from '../../constants/Theme';
 import BottomSheet from '../../components/BottomSheet';
 import * as ImagePicker from 'expo-image-picker';
 import { editItem } from '../../firebase/index';
-import { AuthContext } from '../../contexts/AuthContext';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../constants/types';
 
 const inputInitState = {
   ItemName: 0.3,
@@ -24,7 +25,7 @@ const loadingInitState = {
 };
 
 const EditItem = React.memo(({ refRBSheet, setListItem, handleInputChange, item, onClose }: any) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useSelector((state: ReduxState) => ({ user: state.User }));
   const [inputOpacity, setInputOpacity] = useState(inputInitState);
   const [loading, setLoading] = useState(loadingInitState);
 
@@ -49,20 +50,22 @@ const EditItem = React.memo(({ refRBSheet, setListItem, handleInputChange, item,
   };
 
   const handleSubmit = async () => {
-    setLoading({ submit: true, disableSubmit: true } as any);
+    if (user) {
+      setLoading({ submit: true, disableSubmit: true } as any);
 
-    return editItem(
-      item,
-      user,
-      obj => {
-        setListItem(obj);
-        onClose();
-      },
-      err => {
-        console.log('ERR at editItem:\n', err);
-        setLoading({ upload: false, disableSubmit: false } as any);
-      }
-    );
+      editItem(
+        item,
+        user,
+        obj => {
+          setListItem(obj);
+          onClose();
+        },
+        err => {
+          console.log('ERR at editItem:\n', err);
+          setLoading({ upload: false, disableSubmit: false } as any);
+        }
+      );
+    }
   };
 
   return (

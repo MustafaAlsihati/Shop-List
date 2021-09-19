@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { View, Alert } from 'react-native';
 import { Input, Button } from 'react-native-elements';
@@ -8,7 +8,8 @@ import { styles, colors } from '../../constants/Theme';
 import BottomSheet from '../../components/BottomSheet';
 import * as ImagePicker from 'expo-image-picker';
 import { addList, editList } from '../../firebase';
-import { AuthContext } from '../../contexts/AuthContext';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../constants/types';
 
 const inputInitState = {
   listName: 0.3,
@@ -22,7 +23,7 @@ const loadingInitState = {
 };
 
 const AddList = React.memo(({ refRBSheet, onRefresh, onClose, editSelectedList }: any) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useSelector((state: ReduxState) => ({ user: state.User }));
   const [inputOpacity, setInputOpacity] = useState<any>(inputInitState);
   const [loading, setLoading] = useState<any>(loadingInitState);
   const [isEdit, setIsEdit] = useState(false);
@@ -71,18 +72,20 @@ const AddList = React.memo(({ refRBSheet, onRefresh, onClose, editSelectedList }
       );
     }
 
-    return addList(
-      list,
-      user,
-      () => {
-        setList({});
-        onClose();
-      },
-      err => {
-        console.log('ERR at addList (AddList.js):\n', err);
-        setLoading({ submit: false, disableSubmit: false });
-      }
-    );
+    if (user) {
+      await addList(
+        list,
+        user,
+        () => {
+          setList({});
+          onClose();
+        },
+        err => {
+          console.log('ERR at addList (AddList.js):\n', err);
+          setLoading({ submit: false, disableSubmit: false });
+        }
+      );
+    }
   };
 
   return (

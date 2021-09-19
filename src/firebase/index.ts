@@ -3,6 +3,8 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 import { Item, List, User } from '../constants/types';
+import { store } from '../redux/index';
+import { SET_USER } from '../redux/reducers/User';
 
 /* ################################### Firebase Configs ###################################### */
 
@@ -31,44 +33,54 @@ export const storage = firebaseApp.storage();
 export default firebase;
 
 export const signInWithEmailAndPassword = async (email: string, password: string) => {
-  return firebase.auth().signInWithEmailAndPassword(email, password);
+  try {
+    return firebase.auth().signInWithEmailAndPassword(email, password);
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 export const signUpWithEmailAndPassword = async (user: Partial<User> & { password: string; confirmPassword: string }) => {
-  return firebase
-    .auth()
-    .createUserWithEmailAndPassword(user.email!, user.password)
-    .then(result => {
+  try {
+    const result = await firebase.auth().createUserWithEmailAndPassword(user.email!, user.password);
+    if (result) {
       const uid = result.user?.uid;
-      return db
-        .collection('users')
-        .doc(uid)
-        .set({
-          username: user.username,
-          email: user.email,
-          uid,
-          created: firebase.firestore.FieldValue.serverTimestamp(),
-          image: null,
-          settings: {
-            currency: {
-              symbol: '$',
-              name: 'US Dollar',
-              symbol_native: '$',
-              decimal_digits: 2,
-              rounding: 0,
-              code: 'USD',
-              name_plural: 'US dollars',
-            },
+      const _user = {
+        username: user.username,
+        email: user.email,
+        uid,
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+        image: null,
+        settings: {
+          currency: {
+            symbol: '$',
+            name: 'US Dollar',
+            symbol_native: '$',
+            decimal_digits: 2,
+            rounding: 0,
+            code: 'USD',
+            name_plural: 'US dollars',
           },
-        });
-    })
-    .catch(function (error) {
-      throw Error(error.message);
-    });
+        },
+      };
+
+      await db.collection('users').doc(uid).set(_user);
+
+      return _user;
+    }
+  } catch (error: any) {
+    throw Error(error.message);
+  }
 };
 
 export const signOut = async () => {
-  return await auth.signOut();
+  await auth.signOut();
+  setTimeout(() => {
+    store.dispatch({
+      type: SET_USER,
+      user: null,
+    });
+  }, 500);
 };
 
 /* ##################################### Firestore ######################################### */
@@ -362,19 +374,21 @@ export const getNotifications = async (uid: string) => {
   return snapshot.docs.map(doc => doc.data());
 };
 
-export const leaveList = async (user: User, list_id: string, cb: () => void, err: (e: any) => void) => {
-  return db
-    .collection('lists')
-    .doc(list_id)
-    .update({
-      userIds: firebase.firestore.FieldValue.arrayRemove(user.uid),
-      users: firebase.firestore.FieldValue.arrayRemove({
-        id: user.uid,
-        name: user.username,
-      }),
-    })
-    .then(() => {
-      if (cb) cb();
-    })
-    .catch(error => err(error));
+export const leaveList = async (user: User | null, list_id: string, cb: () => void, err: (e: any) => void) => {
+  if (user) {
+    await db
+      .collection('lists')
+      .doc(list_id)
+      .update({
+        userIds: firebase.firestore.FieldValue.arrayRemove(user.uid),
+        users: firebase.firestore.FieldValue.arrayRemove({
+          id: user.uid,
+          name: user.username,
+        }),
+      })
+      .then(() => {
+        if (cb) cb();
+      })
+      .catch(error => err(error));
+  }
 };
